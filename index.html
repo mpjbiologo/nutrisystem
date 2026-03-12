@@ -871,6 +871,38 @@ td:first-child{font-weight:600;color:var(--g2);}
 </head>
 <body>
 
+<!-- ════ TELA DE LOGIN ════ -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:var(--g1,#0d3b2e);flex-direction:column;align-items:center;justify-content:center;gap:0">
+  <div style="text-align:center;margin-bottom:36px">
+    <div style="font-family:'DM Serif Display',serif;font-size:42px;color:#fff;letter-spacing:-1px">
+      Nutri<span style="color:#4cb87a">System</span>
+    </div>
+    <div style="font-size:13px;color:#a8e6c3;margin-top:6px;letter-spacing:.05em">ÁREA RESTRITA</div>
+  </div>
+  <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:36px 40px;width:100%;max-width:360px;backdrop-filter:blur(10px)">
+    <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:20px;text-align:center">🔒 Acesso Protegido</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <input id="login-senha" type="password" placeholder="Digite sua senha…"
+        style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:15px;outline:none;box-sizing:border-box"
+        onkeydown="if(event.key==='Enter')loginVerificar()"
+        oninput="document.getElementById('login-erro').style.display='none'"
+      />
+      <div id="login-erro" style="display:none;color:#ff8a8a;font-size:12px;text-align:center;padding:6px 0">
+        ❌ Senha incorreta. Tente novamente.
+      </div>
+      <button onclick="loginVerificar()"
+        style="padding:14px;border-radius:12px;border:none;background:#4cb87a;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s"
+        onmouseover="this.style.background='#3da368'" onmouseout="this.style.background='#4cb87a'">
+        Entrar
+      </button>
+    </div>
+    <div style="margin-top:16px;text-align:center;font-size:11px;color:rgba(255,255,255,.35)">
+      NutriSystem Pro · Acesso privado
+    </div>
+  </div>
+</div>
+
+
 <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
 
 <!-- SIDEBAR -->
@@ -1634,6 +1666,31 @@ Exemplo:
 
   <div style="margin-top:20px;display:flex;justify-content:flex-end">
     <button class="btn btn-primary" style="padding:12px 32px;font-size:14px" onclick="salvarConfig()">💾 Salvar todas as configurações</button>
+  </div>
+
+  <!-- ── SENHA DE ACESSO ── -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">🔒 Senha de Acesso</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:12px;color:var(--muted)">A senha protege o acesso ao sistema. Você precisará digitá-la ao abrir o site em novos dispositivos ou após 30 dias.</div>
+      <div class="form-grid cols-2">
+        <div class="form-group">
+          <label>Nova Senha</label>
+          <input id="cfg-senha-nova" type="password" placeholder="Digite a nova senha…" autocomplete="new-password"/>
+        </div>
+        <div class="form-group">
+          <label>Confirmar Nova Senha</label>
+          <input id="cfg-senha-conf" type="password" placeholder="Repita a senha…" autocomplete="new-password"/>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary" onclick="salvarSenha()">🔒 Atualizar Senha</button>
+        <span id="cfg-senha-msg" style="font-size:12px;color:var(--g3)"></span>
+      </div>
+      <div style="padding:10px 14px;background:var(--g6);border-radius:8px;font-size:12px;color:var(--muted)">
+        💡 Senha padrão inicial: <strong>nutri2024</strong> — troque agora para algo pessoal.
+      </div>
+    </div>
   </div>
 
   <!-- ── BACKUP & RESTAURAÇÃO ── -->
@@ -6186,6 +6243,62 @@ function inserirTemplatePlanoLivre(tipo){
 
 const CFG_KEY = 'ns_config_v2';
 
+// ════════════════════════════════════════════════════════════
+// LOGIN / PROTEÇÃO POR SENHA
+// ════════════════════════════════════════════════════════════
+const LOGIN_KEY    = 'ns_login_ok';
+const LOGIN_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 dias em ms
+
+function loginVerificar(){
+  const inp   = document.getElementById('login-senha');
+  const senha = inp?.value || '';
+  const hash  = loginHash(senha);
+  const stored= loginHash(CFG.senha || 'nutri2024');
+  if(hash === stored){
+    localStorage.setItem(LOGIN_KEY, JSON.stringify({ok:true, ts: Date.now()}));
+    document.getElementById('login-screen').style.display = 'none';
+    inp.value = '';
+  } else {
+    document.getElementById('login-erro').style.display = 'block';
+    inp.focus(); inp.select();
+  }
+}
+
+function loginHash(str){
+  // Simples hash determinístico para comparação client-side
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = Math.imul(31,h)+str.charCodeAt(i)|0; }
+  return h.toString(36);
+}
+
+function loginVerificarSessao(){
+  const screen = document.getElementById('login-screen');
+  try{
+    const s = JSON.parse(localStorage.getItem(LOGIN_KEY)||'null');
+    if(s && s.ok && (Date.now()-s.ts) < LOGIN_EXPIRY){
+      screen.style.display='none'; return true;
+    }
+  }catch(e){}
+  screen.style.display='flex'; return false;
+}
+
+function salvarSenha(){
+  const nova = document.getElementById('cfg-senha-nova')?.value||'';
+  const conf = document.getElementById('cfg-senha-conf')?.value||'';
+  const msg  = document.getElementById('cfg-senha-msg');
+  if(!nova){ msg.textContent='⚠️ Digite a nova senha'; msg.style.color='var(--red)'; return; }
+  if(nova.length < 4){ msg.textContent='⚠️ Mínimo 4 caracteres'; msg.style.color='var(--red)'; return; }
+  if(nova !== conf){ msg.textContent='⚠️ Senhas não conferem'; msg.style.color='var(--red)'; return; }
+  CFG.senha = nova;
+  localStorage.setItem(CFG_KEY, JSON.stringify(CFG));
+  // Renova sessão com nova senha
+  localStorage.setItem(LOGIN_KEY, JSON.stringify({ok:true, ts:Date.now()}));
+  document.getElementById('cfg-senha-nova').value='';
+  document.getElementById('cfg-senha-conf').value='';
+  msg.textContent='✅ Senha atualizada!'; msg.style.color='var(--g3)';
+  setTimeout(()=>{ msg.textContent=''; },3000);
+}
+
 const CFG_DEFAULT = {
   nome: 'Marcos de Paula Jr.',
   crn: 'CRN9 35526/P',
@@ -6201,7 +6314,8 @@ const CFG_DEFAULT = {
     { nome: 'Clínica Principal', end: '', cidade: '', tel: '', ativo: true }
   ],
   tema: 'green',
-  modo: 'light'
+  modo: 'light',
+  senha: 'nutri2024'
 };
 
 let CFG = {...CFG_DEFAULT};
@@ -6695,6 +6809,7 @@ function restaurarBackup(){
 // INIT
 // ════════════════════════════════════════════════════════════
 function init(){
+  loginVerificarSessao();
   const today=new Date().toISOString().slice(0,10);
   ['anam-data','antro-data','ex-data','ag-data','fin-data','arq-data'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value=today;
