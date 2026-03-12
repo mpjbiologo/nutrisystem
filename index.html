@@ -6580,40 +6580,40 @@ async function dbxSalvarBackup(){
     const nomeDt  = dt.toISOString().slice(0,19).replace('T','_').replace(/:/g,'-');
     const filename= `${DBX_FOLDER}/NutriSystem_${nomeDt}.json`;
 
-    const res = await fetch('https://content.dropboxapi.com/2/files/upload',{
+    // Usa apiArg como parâmetro na URL para evitar problema de CORS com header customizado
+    const apiArg = encodeURIComponent(JSON.stringify({
+      path: filename,
+      mode: {'.tag':'add'},
+      autorename: true,
+      mute: false,
+      strict_conflict: false
+    }));
+
+    const res = await fetch(`https://content.dropboxapi.com/2/files/upload?arg=${apiArg}`,{
       method:'POST',
       headers:{
         'Authorization': 'Bearer '+_dbxToken,
-        'Content-Type':  'application/octet-stream',
-        'Dropbox-API-Arg': JSON.stringify({
-          path: filename,
-          mode: 'add',
-          autorename: true,
-          mute: false
-        })
+        'Content-Type':  'text/plain; charset=dropbox-cors-hack'
       },
       body: json
     });
+
     if(res.ok){
-      const f = await res.json();
+      await res.json();
       toast(`✅ Backup salvo no Dropbox! ${DB.pac.length} pacientes · ${(json.length/1024).toFixed(0)}KB`);
       dbxListarBackups();
     } else {
-      let errMsg = res.status;
+      let errMsg = 'Status '+res.status;
       try{
         const err = await res.json();
-        const sum = err?.error_summary || err?.error?.['.tag'] || JSON.stringify(err);
-        // Mensagens amigáveis para erros comuns
-        if(res.status===400) errMsg = 'Token inválido ou permissões insuficientes. Veja instruções abaixo.';
-        else if(res.status===401) errMsg = 'Token expirado ou revogado — gere um novo token no Dropbox.';
-        else if(res.status===403) errMsg = 'Sem permissão de escrita — ative "files.content.write" no app.';
-        else errMsg = sum;
+        errMsg = err?.error_summary || err?.error?.['.tag'] || JSON.stringify(err);
+        if(res.status===401) errMsg = 'Token expirado — gere um novo no Dropbox.';
+        if(res.status===403) errMsg = 'Sem permissão — ative files.content.write no app.';
       }catch(e){}
       toast('❌ Dropbox: '+errMsg);
-      // Mostra painel de ajuda
       dbxMostrarAjuda(res.status);
     }
-  }catch(e){ toast('❌ Falha de conexão: '+e.message); }
+  }catch(e){ toast('❌ Falha: '+e.message); }
   finally{ if(btn){ btn.disabled=false; btn.innerHTML='<span>☁️</span> Salvar backup no Dropbox'; } }
 }
 
