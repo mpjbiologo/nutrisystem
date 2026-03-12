@@ -1727,6 +1727,24 @@ Exemplo:
         Obtenha o token em <strong>dropbox.com/developers/apps</strong> → seu app → aba Settings → "Generate access token"
       </div>
 
+      <!-- Painel de ajuda (aparece só em erro) -->
+      <div id="dbx-ajuda" style="display:none;margin-bottom:14px;padding:14px 16px;background:#fff8e6;border:1.5px solid #f5c842;border-radius:10px;font-size:12px;color:#7a5c00">
+        <div style="font-weight:700;margin-bottom:8px">⚠️ Como corrigir o erro de permissão:</div>
+        <ol style="margin:0;padding-left:18px;line-height:1.9">
+          <li>Acesse <strong>dropbox.com/developers/apps</strong></li>
+          <li>Clique no seu app <strong>NutriSystem Backup</strong></li>
+          <li>Vá na aba <strong>"Permissions"</strong></li>
+          <li>Marque: <strong>files.content.write</strong> e <strong>files.content.read</strong> e <strong>files.metadata.read</strong></li>
+          <li>Clique em <strong>"Submit"</strong></li>
+          <li>Volte à aba <strong>"Settings"</strong> → role até "OAuth 2" → clique em <strong>"Generate"</strong> para gerar um <em>novo token</em></li>
+          <li>Cole o novo token aqui e clique em <strong>Conectar</strong></li>
+        </ol>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(0,0,0,.06);border-radius:6px">
+          💡 O token antigo não herda novas permissões — sempre gere um novo após mudar as permissões.
+        </div>
+        <button onclick="document.getElementById('dbx-ajuda').style.display='none'" style="margin-top:10px;background:none;border:1px solid #c8a200;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:11px;color:#7a5c00">Fechar</button>
+      </div>
+
       <!-- Botões Dropbox -->
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-primary" id="dbx-btn-salvar" onclick="dbxSalvarBackup()" style="gap:6px">
@@ -6546,6 +6564,11 @@ function gerarPayloadBackup(){
 }
 
 // ── Salvar backup no Dropbox ──
+function dbxMostrarAjuda(status){
+  const el = document.getElementById('dbx-ajuda');
+  if(el) el.style.display='block';
+}
+
 async function dbxSalvarBackup(){
   if(!_dbxToken){ toast('⚠️ Configure o token do Dropbox primeiro!'); return; }
   const btn = document.getElementById('dbx-btn-salvar');
@@ -6574,10 +6597,21 @@ async function dbxSalvarBackup(){
     if(res.ok){
       const f = await res.json();
       toast(`✅ Backup salvo no Dropbox! ${DB.pac.length} pacientes · ${(json.length/1024).toFixed(0)}KB`);
-      dbxListarBackups(); // atualiza lista
+      dbxListarBackups();
     } else {
-      const err = await res.json();
-      toast('❌ Erro ao salvar no Dropbox: '+(err?.error_summary||res.status));
+      let errMsg = res.status;
+      try{
+        const err = await res.json();
+        const sum = err?.error_summary || err?.error?.['.tag'] || JSON.stringify(err);
+        // Mensagens amigáveis para erros comuns
+        if(res.status===400) errMsg = 'Token inválido ou permissões insuficientes. Veja instruções abaixo.';
+        else if(res.status===401) errMsg = 'Token expirado ou revogado — gere um novo token no Dropbox.';
+        else if(res.status===403) errMsg = 'Sem permissão de escrita — ative "files.content.write" no app.';
+        else errMsg = sum;
+      }catch(e){}
+      toast('❌ Dropbox: '+errMsg);
+      // Mostra painel de ajuda
+      dbxMostrarAjuda(res.status);
     }
   }catch(e){ toast('❌ Falha de conexão: '+e.message); }
   finally{ if(btn){ btn.disabled=false; btn.innerHTML='<span>☁️</span> Salvar backup no Dropbox'; } }
