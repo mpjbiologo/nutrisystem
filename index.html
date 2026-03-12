@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NutriSystem Pro</title>
+<title>Sistema de Consultório Nutricional</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 /* ══════════ THEMES ══════════ */
@@ -875,9 +875,11 @@ td:first-child{font-weight:600;color:var(--g2);}
 <div id="login-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:var(--g1,#0d3b2e);flex-direction:column;align-items:center;justify-content:center;gap:0">
   <div style="text-align:center;margin-bottom:36px">
     <div style="font-family:'DM Serif Display',serif;font-size:42px;color:#fff;letter-spacing:-1px">
-      Nutri<span style="color:#4cb87a">System</span>
+      <span style="color:#4cb87a">Consultório Nutricional</span>
     </div>
-    <div style="font-size:13px;color:#a8e6c3;margin-top:6px;letter-spacing:.05em">ÁREA RESTRITA</div>
+    <div id="login-prof-nome" style="font-family:'DM Serif Display',serif;font-size:24px;color:#fff;margin-top:16px;min-height:30px"></div>
+    <div id="login-prof-crn" style="font-size:13px;color:#a8e6c3;margin-top:4px;letter-spacing:.03em"></div>
+    <div id="login-prof-clinica" style="font-size:12px;color:rgba(255,255,255,.45);margin-top:3px;letter-spacing:.04em"></div>
   </div>
   <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:36px 40px;width:100%;max-width:360px;backdrop-filter:blur(10px)">
     <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:20px;text-align:center">🔒 Acesso Protegido</div>
@@ -897,7 +899,7 @@ td:first-child{font-weight:600;color:var(--g2);}
       </button>
     </div>
     <div style="margin-top:16px;text-align:center;font-size:11px;color:rgba(255,255,255,.35)">
-      NutriSystem Pro · Acesso privado
+      Consultório Nutricional · Acesso privado
     </div>
   </div>
 </div>
@@ -908,7 +910,7 @@ td:first-child{font-weight:600;color:var(--g2);}
 <!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="sidebar-logo">
-    <h1>Nutri<span>System</span></h1>
+    <h1>Consultório Nutricional</h1>
     <p>Sistema de Gestão Nutricional</p>
   </div>
   <div class="sidebar-clinic">
@@ -938,14 +940,14 @@ td:first-child{font-weight:600;color:var(--g2);}
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-prof" onclick="goTo('config')" style="cursor:pointer" title="Clique para configurar">
-      <div class="prof-name" id="sb-prof-nome">Marcos de Paula Jr.</div>
-      <div class="prof-crn" id="sb-prof-crn">Nutricionista CRN9 35526/P</div>
+      <div class="prof-name" id="sb-prof-nome">Configure nas ⚙️ Configurações</div>
+      <div class="prof-crn" id="sb-prof-crn"></div>
       <div class="prof-contact">
-        <div class="prof-line" id="sb-prof-tel-line"><span>📱</span><a id="sb-prof-tel-link" href="https://wa.me/5537998336210" target="_blank">(37) 99833-6210</a><span>💬</span></div>
-        <div class="prof-line" id="sb-prof-ig-line"><span>📸</span><a id="sb-prof-ig-link" href="https://instagram.com/mpjnutri" target="_blank">@mpjnutri</a></div>
+        <div class="prof-line" id="sb-prof-tel-line"><span>📱</span><a id="sb-prof-tel-link" href="#" style="color:var(--muted);font-size:11px">Adicione seu telefone</a><span>💬</span></div>
+        <div class="prof-line" id="sb-prof-ig-line"><span>📸</span><a id="sb-prof-ig-link" href="#" style="color:var(--muted);font-size:11px">Adicione seu Instagram</a></div>
       </div>
     </div>
-    <div class="sidebar-copy">NutriSystem Pro v2.0 · Dados locais</div>
+    <div class="sidebar-copy">Consultório Nutricional v2.0 · Gratuito & Open Source</div>
   </div>
 </aside>
 
@@ -1688,7 +1690,7 @@ Exemplo:
         <span id="cfg-senha-msg" style="font-size:12px;color:var(--g3)"></span>
       </div>
       <div style="padding:10px 14px;background:var(--g6);border-radius:8px;font-size:12px;color:var(--muted)">
-        💡 Senha padrão inicial: <strong>nutri2024</strong> — troque agora para algo pessoal.
+        💡 Senha padrão: <strong>123456</strong> — troque imediatamente após o primeiro acesso.
       </div>
     </div>
   </div>
@@ -1732,7 +1734,7 @@ Exemplo:
         <div style="font-weight:700;margin-bottom:8px">⚠️ Como corrigir o erro de permissão:</div>
         <ol style="margin:0;padding-left:18px;line-height:1.9">
           <li>Acesse <strong>dropbox.com/developers/apps</strong></li>
-          <li>Clique no seu app <strong>NutriSystem Backup</strong></li>
+          <li>Clique no seu app <strong>Consultório Nutricional Backup</strong></li>
           <li>Vá na aba <strong>"Permissions"</strong></li>
           <li>Marque: <strong>files.content.write</strong> e <strong>files.content.read</strong> e <strong>files.metadata.read</strong></li>
           <li>Clique em <strong>"Submit"</strong></li>
@@ -5559,7 +5561,7 @@ function gerarHTMLImpressao(pacId, forPrint){
     html+=`<div class="prn-header">
       <div>
         <div class="prn-clinic-name">🥗 ${clinicName}</div>
-        <div class="prn-crn">${CFG.nome||'Marcos de Paula Jr.'} · Nutricionista ${CFG.crn||'CRN9 35526/P'}</div>
+        <div class="prn-crn">${CFG.nome||'Seu Nome'} · Nutricionista ${CFG.crn||'Seu CRN'}</div>
       </div>
       <div class="prn-contact">
         ${CFG.tel?'📱 '+CFG.tel+'<br>':''}
@@ -5914,7 +5916,7 @@ function gerarHTMLImpressao(pacId, forPrint){
     html+=`<div class="prn-assinatura">
       <div class="prn-assin-box">
         <div class="prn-assin-line"></div>
-        <div class="prn-assin-label">${CFG.nome||'Marcos de Paula Jr.'}<br>Nutricionista ${CFG.crn||'CRN9 35526/P'}</div>
+        <div class="prn-assin-label">${CFG.nome||'Seu Nome'}<br>Nutricionista ${CFG.crn||'Seu CRN'}</div>
       </div>
       <div class="prn-assin-box">
         <div class="prn-assin-line"></div>
@@ -6291,6 +6293,16 @@ function loginHash(str){
 
 function loginVerificarSessao(){
   const screen = document.getElementById('login-screen');
+  // Popula nome/CRN/clínica do config salvo
+  try{
+    const cfg = JSON.parse(localStorage.getItem(CFG_KEY)||'null') || CFG_DEFAULT;
+    const elNome   = document.getElementById('login-prof-nome');
+    const elCrn    = document.getElementById('login-prof-crn');
+    const elClinic = document.getElementById('login-prof-clinica');
+    if(elNome)   elNome.textContent   = cfg.nome    || '';
+    if(elCrn)    elCrn.textContent    = cfg.crn ? 'Nutricionista · '+cfg.crn : (cfg.nome ? 'Nutricionista' : '');
+    if(elClinic) elClinic.textContent = cfg.clinica || '';
+  }catch(e){}
   try{
     const s = JSON.parse(localStorage.getItem(LOGIN_KEY)||'null');
     if(s && s.ok && (Date.now()-s.ts) < LOGIN_EXPIRY){
@@ -6488,10 +6500,10 @@ if(cnEl){
 // BACKUP & RESTAURAÇÃO — com Dropbox
 // ════════════════════════════════════════════════════════════
 
-const DBX_FOLDER   = '/NutriSystem Backups';
+const DBX_FOLDER   = '/Consultório Nutricional Backups';
 const DBX_TOKEN_KEY = 'ns_dbx_token';
 let _backupPendente = null;
-let _dbxToken = localStorage.getItem(DBX_TOKEN_KEY) || 'sl.u.AGXpBv4BJ_BmYaeZRjXmMR-nwuQnBpF600_7qyIUAO5aBXmQc6M1DNLxIRTZ6kPcVvb2a8xvOQvfECO23-a1KwajeDrni5ksTgowFHi5aQQhvxWPDrkDDaMvaAUXftVlWHhIj5htYSiGwBOiAcclqkaX-lSygfUwQV5G5rZR1Gcsmad4IqHVz72mAa4I1Bh94LeewADXoRbIVuzpEeAnMAmexd1C_wmS0QHfiP2TN29HgdtQ6BGCXX8ZVOa-OHyKgFiQb5XUvEH9_QWaOqzMtZnMTvs69rN3a8gxHkIyxqSPgLGgCKUIB-4ZH4t4KxS2ZjBGooZoi-OIPukUIgDJDKhH4HpLv9mOgDozfyQpvuPnsElxt9p145SXrH1WKEDhvSaHMh23rOZdSxFt-J-ewI2Fapbm5caFlHs_2ChOe2uUTca4VMR4bp4tit3-X4MQu5mw6MHtIsOQywvQ3vKe_LsFasN8Gv9qUlmNhdI8hq0wnev23fPzGyJfaQZEabCJBTE2uX7ec_PPbO2EuHEDuft7ZSk4UH_7fqyqzHuSJcRGxTOpjTJnN0DrdWUs3iFnhtVxlPJ5tkld950IeqFgmJDzumAIU6k_EY3RV351lMcVyHCRqIHLmJAxdMuQMondO5SGDeKMVo0EVQk3g5-uEefavUJnTvMmQ88AasLU7Lx3-XhW2UeAPi0dmcL-meD5s_cNhN0Fsrp72Z8JT4QNE63rFBr0jE08JyAuWl7O6Sc34-xF-3_l7Ackpk4TvASFiAzJLSki1vqzHMwDHmZVFStl7SGoxQhuegkw4tZ4em4q8ztXkMw5ea3eGTWAYc0ciFdk_kdXW1MnLQFE89hVxNBQ0rjcoIudNEVOmR_u-Ie6MKUKZCxsXlbqnU4W94D_Q5pebCUBKNAl2-lik0QRePlSooboA_Hm4QFRBi5AqriHjOihvhttMZbFtcZoy_aRJKAjvASZLQOcaD7id0mN8W40XtDgQWYlDEUk9q0D7mj5Ce-BaZIRDk9mZ3DFgasqitybOSGLa9FZ1iwNp8c0iDLpLyW6trWnurSEsoZQPlXM6EcuNZ27cqvJtorw3CGBnP2hN6tlegqQHsry5yL73khChn6emMBZUy8DpUgxDPKhvC0lz5q4ZGjj87oxDom08x4Y9KBSjqB61qADm7R4Wwgtc44ocXl6-y3F1jzvihwNed_LEWtrzwXKBLLAOKciWp1KZdZK1DnT3if7dqW0DkB6pGfjh5YVkxCdvZuc6i37j9A22KY6eVo_e639ghRKhy4PsOl3c8FDZBdvygmKgfg4JhXu38sOxIfbdFwCSqdScEeLa7cAA5n-rc80y4vae8A';
+let _dbxToken = localStorage.getItem(DBX_TOKEN_KEY) || '';
 
 // ── Inicializa token salvo no input ao abrir a página ──
 function dbxInitUI(){
@@ -6548,7 +6560,7 @@ function dbxAtualizarBadge(ok, nome){
 function gerarPayloadBackup(){
   return {
     _meta:{
-      versao:'2.0', sistema:'NutriSystem Pro',
+      versao:'2.0', sistema:'Sistema de Consultório Nutricional',
       exportadoEm: new Date().toISOString(),
       exportadoPor: CFG.nome||'Nutricionista',
       totalPacientes: DB.pac.length
@@ -6578,7 +6590,7 @@ async function dbxSalvarBackup(){
     const json    = JSON.stringify(payload, null, 2);
     const dt      = new Date();
     const nomeDt  = dt.toISOString().slice(0,19).replace('T','_').replace(/:/g,'-');
-    const filename= `${DBX_FOLDER}/NutriSystem_${nomeDt}.json`;
+    const filename= `${DBX_FOLDER}/SistemaConsultorioNutricional_${nomeDt}.json`;
 
     // Usa apiArg como parâmetro na URL para evitar problema de CORS com header customizado
     const apiArg = encodeURIComponent(JSON.stringify({
@@ -6745,7 +6757,7 @@ function exportarBackup(tipo){
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   const dt   = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-  a.href=url; a.download=`NutriSystem_Backup_${dt}.json`; a.click();
+  a.href=url; a.download=`SistemaConsultorioNutricional_Backup_${dt}.json`; a.click();
   URL.revokeObjectURL(url);
   toast(`✅ Backup exportado! ${DB.pac.length} pacientes · ${DB.consulta.length} consultas`);
 }
@@ -6760,7 +6772,7 @@ function exportarPacientesCSV(){
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download=`NutriSystem_Pacientes_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`; a.click();
+  a.href=url; a.download=`SistemaConsultorioNutricional_Pacientes_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`; a.click();
   URL.revokeObjectURL(url);
   toast(`✅ ${DB.pac.length} pacientes exportados em CSV!`);
 }
