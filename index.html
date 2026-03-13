@@ -815,7 +815,12 @@ td:first-child{font-weight:600;color:var(--g2);}
 .prn-food-name{flex:2;}.prn-food-med{flex:1;color:#666;}
 .prn-food-macros{display:flex;gap:8px;font-size:11px;color:#5a8a6a;flex-shrink:0;}
 .prn-meal-totals{background:#f5faf5;padding:5px 12px;font-size:11px;display:flex;gap:16px;color:#5a8a6a;font-weight:600;}
-.prn-texto-livre{background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.8;white-space:pre-wrap;}
+.prn-texto-livre{background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.8;}
+.prn-texto-livre ul,.prn-texto-livre ol{padding-left:20px;margin:4px 0;}
+.prn-texto-livre li{margin:2px 0;}
+.prn-texto-livre b,.prn-texto-livre strong{font-weight:700;}
+.prn-texto-livre i,.prn-texto-livre em{font-style:italic;}
+.prn-texto-livre u{text-decoration:underline;}
 .prn-sintomas{display:flex;flex-wrap:wrap;gap:5px;}
 .prn-sintoma-badge{background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;}
 .prn-def-item{display:flex;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px dotted #eee;}
@@ -1215,38 +1220,106 @@ td:first-child{font-weight:600;color:var(--g2);}
     </div>
 
     <div class="card" style="padding:0;overflow:hidden">
-      <!-- Toolbar -->
-      <div style="display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--g6)">
-        <span style="font-size:11px;font-weight:700;color:var(--g2);text-transform:uppercase;letter-spacing:.05em;margin-right:4px">Inserir:</span>
+      <!-- Toolbar Formatação -->
+      <div id="plano-rich-toolbar" style="display:flex;align-items:center;gap:3px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--g6)">
+        <!-- Fonte e Tamanho -->
+        <select id="plano-font-family" onchange="planoExecCmd('fontName',this.value)" title="Fonte"
+          style="padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:#fff;color:var(--text);height:28px;cursor:pointer">
+          <option value="DM Sans, sans-serif">DM Sans</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+        </select>
+        <select id="plano-font-size" onchange="planoSetFontSize(this.value)" title="Tamanho"
+          style="padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:#fff;color:var(--text);height:28px;cursor:pointer;width:68px">
+          <option value="1">8px</option>
+          <option value="2">10px</option>
+          <option value="3" selected>13px</option>
+          <option value="4">16px</option>
+          <option value="5">20px</option>
+          <option value="6">24px</option>
+          <option value="7">32px</option>
+        </select>
+
+        <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+
+        <!-- Estilo texto -->
+        <button class="plano-tb-btn" onclick="planoExecCmd('bold')" title="Negrito (Ctrl+B)"><b>B</b></button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('italic')" title="Itálico (Ctrl+I)"><i>I</i></button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('underline')" title="Sublinhado (Ctrl+U)" style="text-decoration:underline">U</button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('strikeThrough')" title="Tachado" style="text-decoration:line-through">S</button>
+
+        <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+
+        <!-- Cor do texto -->
+        <label title="Cor do texto" style="position:relative;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;background:#fff;font-size:13px">
+          A<input type="color" id="plano-color-pick" value="#1a1a1a" oninput="planoExecCmd('foreColor',this.value)"
+            style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+          <div id="plano-color-bar" style="position:absolute;bottom:3px;left:4px;right:4px;height:3px;background:#1a1a1a;border-radius:2px"></div>
+        </label>
+        <!-- Cor de fundo/destaque -->
+        <label title="Destaque" style="position:relative;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;background:#fff;font-size:13px">
+          🖍<input type="color" id="plano-bg-pick" value="#ffff00" oninput="planoExecCmd('hiliteColor',this.value)"
+            style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+        </label>
+
+        <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+
+        <!-- Alinhamento -->
+        <button class="plano-tb-btn" onclick="planoExecCmd('justifyLeft')" title="Alinhar à esquerda">⬛</button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('justifyCenter')" title="Centralizar">☰</button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('justifyRight')" title="Alinhar à direita">▤</button>
+
+        <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+
+        <!-- Listas -->
+        <button class="plano-tb-btn" onclick="planoExecCmd('insertUnorderedList')" title="Lista de tópicos">• ≡</button>
+        <button class="plano-tb-btn" onclick="planoExecCmd('insertOrderedList')" title="Lista numerada">1. ≡</button>
+
+        <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+
+        <!-- Inserir Templates -->
+        <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Inserir:</span>
         <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('refeicao')">+ Refeição</button>
-        <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('dia')">📅 Dia completo</button>
+        <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('dia')">📅 Dia</button>
         <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('semanal')">📆 Semana</button>
-        <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
-        <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('orientacoes')">💡 Orientações</button>
-        <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="inserirTemplatePlanoLivre('orientacoes')">💡 Dicas</button>
+
+        <!-- Ações -->
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
           <button class="btn btn-secondary btn-sm" onclick="limparPlanoLivre()">🗑️ Limpar</button>
-          <button class="btn btn-secondary btn-sm" onclick="marcarPlanoLivrePendente()" title="Adicionar tarefa de plano alimentar nas pendências">📋 Pendente</button>
+          <button class="btn btn-secondary btn-sm" onclick="marcarPlanoLivrePendente()" title="Adicionar tarefa de plano alimentar nas pendências">📋</button>
           <button class="btn btn-primary btn-sm" onclick="salvarPlanoLivre()">💾 Salvar</button>
         </div>
       </div>
-      <!-- Editor -->
-      <textarea id="plano-livre-texto"
-        placeholder="Digite o plano alimentar aqui...
 
-Exemplo:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-☀️ CAFÉ DA MANHÃ (7h00)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• 2 fatias de pão integral
-• 1 ovo mexido + 1 fatia de queijo
-• 1 copo de leite desnatado (200mL)
-• 1 fruta (banana ou maçã)
-
-🥗 ALMOÇO (12h00)
-..."
-        style="width:100%;height:480px;border:none;padding:20px;font-size:13px;line-height:1.9;font-family:'DM Sans',sans-serif;resize:vertical;outline:none;color:#1a1a1a"
-        oninput="autoSavePlanoLivre()"></textarea>
+      <!-- Rich Editor (contenteditable) -->
+      <div id="plano-livre-texto"
+        contenteditable="true"
+        spellcheck="true"
+        data-placeholder="Digite o plano alimentar aqui...&#10;&#10;Use a barra de formatação acima para negrito, cores, tamanhos de fonte, listas e mais.&#10;Você também pode colar conteúdo de Word ou Google Docs mantendo a formatação."
+        style="width:100%;min-height:480px;border:none;padding:20px;font-size:13px;line-height:1.9;font-family:'DM Sans',sans-serif;outline:none;color:#1a1a1a;overflow-y:auto"
+        oninput="autoSavePlanoLivre()" onfocus="planoEditorFocus()" onblur="planoEditorBlur()"
+        onkeydown="planoEditorKeydown(event)"></div>
     </div>
+
+    <style>
+    .plano-tb-btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;
+      background:#fff;cursor:pointer;font-size:13px;color:var(--text);
+      transition:all .15s;flex-shrink:0;
+    }
+    .plano-tb-btn:hover{background:var(--g6);border-color:var(--g3);}
+    .plano-tb-btn.active{background:var(--g5);border-color:var(--g3);color:var(--g1);}
+    #plano-livre-texto:empty:before{
+      content:attr(data-placeholder);
+      color:#aaa;pointer-events:none;white-space:pre-wrap;
+    }
+    #plano-livre-texto ul,#plano-livre-texto ol{padding-left:20px;}
+    #plano-livre-texto li{margin:2px 0;}
+    </style>
 
     <!-- Planos salvos -->
     <div id="plano-livre-salvos" style="margin-top:16px"></div>
@@ -6031,23 +6104,26 @@ function gerarHTMLImpressao(pacId, forPrint){
 
   // ── PLANO ALIMENTAR TEXTO LIVRE ──
   if(isChecked('plano-livre')){
-    const textoEl=document.getElementById('imp-plano-livre-texto');
-    // Try: 1) preview textarea, 2) global var, 3) last saved for this patient
-    let texto=textoEl?textoEl.value:planoLivreTexto;
-    if(!texto&&DB.planoLivre){
+    const editorEl=document.getElementById('imp-plano-livre-editor');
+    // Try: 1) preview editor innerHTML, 2) global var, 3) last saved for this patient
+    let htmlContent = editorEl ? editorEl.innerHTML : planoLivreTexto;
+    if((!htmlContent||htmlContent==='<br>')&&DB.planoLivre){
       const saved=(DB.planoLivre).filter(p=>p.pacId===pacId).sort((a,b)=>b.criado-a.criado);
-      if(saved.length)texto=saved[0].texto||'';
+      if(saved.length) htmlContent=saved[0].texto||'';
     }
+    // Sanitize: allow formatting tags only
+    const safeHtml = (htmlContent||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'');
     html+=`<div class="prn-block">
       <div class="prn-block-title">📄 Plano Alimentar</div>
       ${forPrint
-        ?`<div class="prn-texto-livre">${(texto||'').replace(/</g,'&lt;')}</div>`
+        ?`<div class="prn-texto-livre">${safeHtml}</div>`
         :`<div style="margin-bottom:8px">
-            <textarea id="imp-plano-livre-texto" placeholder="Digite o plano alimentar personalizado aqui...&#10;&#10;Café da manhã (7h): ...&#10;Lanche da manhã (10h): ...&#10;Almoço (12h30): ...&#10;Lanche da tarde (15h): ...&#10;Jantar (19h): ...&#10;Ceia (21h): ..."
-              style="width:100%;height:240px;border:1.5px solid #ddd;border-radius:8px;padding:12px;font-size:12px;line-height:1.8;font-family:inherit;resize:vertical;color:#1a1a1a"
-              oninput="planoLivreTexto=this.value">${texto||''}</textarea>
+            <div id="imp-plano-livre-editor"
+              contenteditable="true"
+              style="width:100%;min-height:200px;border:1.5px solid #ddd;border-radius:8px;padding:12px;font-size:13px;line-height:1.8;font-family:inherit;color:#1a1a1a;outline:none"
+              oninput="planoLivreTexto=this.innerHTML">${htmlContent||''}</div>
           </div>
-          <div class="prn-texto-livre" style="display:${texto?'block':'none'};margin-top:8px">${(texto||'').replace(/</g,'&lt;')}</div>`
+          <div class="prn-texto-livre" style="display:${htmlContent?'block':'none'};margin-top:8px">${safeHtml}</div>`
       }
     </div>`;
   }
@@ -6151,56 +6227,62 @@ function gerarHTMLImpressao(pacId, forPrint){
 function gerarImpressao(){
   const pacId=document.getElementById('imp-pac').value;
   if(!pacId){toast('⚠️ Selecione um paciente!');return;}
-  const plEl=document.getElementById('imp-plano-livre-texto');
-  if(plEl)planoLivreTexto=plEl.value;
+  const plEl=document.getElementById('imp-plano-livre-editor');
+  if(plEl) planoLivreTexto=plEl.innerHTML;
   const orEl=document.getElementById('imp-orient-texto');
-  if(orEl)orientacoesTexto=orEl.value;
+  if(orEl) orientacoesTexto=orEl.value;
   const body=gerarHTMLImpressao(pacId,true);
 
   const css=`
     @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;600;700&display=swap');
     @page { size:A4 portrait; margin:12mm 14mm 12mm 14mm; }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',Arial,sans-serif;font-size:10.5px;line-height:1.45;color:#1a1a1a;background:#fff;}
+    body{font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.55;color:#1a1a1a;background:#fff;}
     .prn-header{display:flex;justify-content:space-between;align-items:flex-start;
       border-bottom:2px solid #0d3b2e;padding-bottom:10px;margin-bottom:14px;}
-    .prn-clinic-name{font-size:15px;font-weight:700;color:#0d3b2e;font-family:'DM Serif Display',serif;}
-    .prn-crn{font-size:10px;color:#5a8a6a;margin-top:2px;}
-    .prn-contact{font-size:9.5px;color:#555;text-align:right;line-height:1.6;}
-    .prn-block{margin-bottom:14px;break-inside:avoid;}
-    .prn-block-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-      color:#0d3b2e;border-bottom:1.5px solid #c8e6c9;padding-bottom:4px;margin-bottom:7px;}
-    .prn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px;font-size:10px;}
-    .prn-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:10px;}
-    .prn-field{padding:2px 0;border-bottom:1px dotted #ddd;}
-    .prn-field .lbl{color:#777;font-size:9px;display:block;}
-    .prn-field .val{font-weight:600;color:#1a1a1a;}
-    .prn-meal{margin-bottom:7px;border:1px solid #ddd;border-radius:5px;overflow:hidden;break-inside:avoid;}
-    .prn-meal-hdr{background:#0d3b2e;color:#fff;padding:5px 10px;display:flex;justify-content:space-between;align-items:center;}
-    .prn-meal-name{font-weight:700;font-size:10.5px;}
-    .prn-meal-kcal{font-size:9.5px;color:#a5d6a7;}
-    .prn-meal-body{padding:5px 10px;}
-    .prn-food-row{display:flex;gap:6px;font-size:9.5px;padding:2px 0;border-bottom:1px dotted #f0f0f0;align-items:center;}
+    .prn-clinic-name{font-size:18px;font-weight:700;color:#0d3b2e;font-family:'DM Serif Display',serif;}
+    .prn-crn{font-size:11.5px;color:#5a8a6a;margin-top:2px;}
+    .prn-contact{font-size:11px;color:#555;text-align:right;line-height:1.6;}
+    .prn-block{margin-bottom:16px;break-inside:avoid;}
+    .prn-block-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+      color:#0d3b2e;border-bottom:1.5px solid #c8e6c9;padding-bottom:4px;margin-bottom:8px;}
+    .prn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px 14px;font-size:11.5px;}
+    .prn-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 14px;font-size:11.5px;}
+    .prn-field{padding:3px 0;border-bottom:1px dotted #ddd;}
+    .prn-field .lbl{color:#777;font-size:10.5px;display:block;}
+    .prn-field .val{font-weight:600;color:#1a1a1a;font-size:12px;}
+    .prn-meal{margin-bottom:8px;border:1px solid #ddd;border-radius:5px;overflow:hidden;break-inside:avoid;}
+    .prn-meal-hdr{background:#0d3b2e;color:#fff;padding:6px 12px;display:flex;justify-content:space-between;align-items:center;}
+    .prn-meal-name{font-weight:700;font-size:12.5px;}
+    .prn-meal-kcal{font-size:11px;color:#a5d6a7;}
+    .prn-meal-body{padding:6px 12px;}
+    .prn-food-row{display:flex;gap:6px;font-size:11px;padding:3px 0;border-bottom:1px dotted #f0f0f0;align-items:center;}
     .prn-food-row:last-child{border-bottom:none;}
     .prn-food-name{flex:2;}.prn-food-med{flex:1;color:#666;}
-    .prn-food-macros{display:flex;gap:6px;font-size:9px;color:#5a8a6a;flex-shrink:0;}
-    .prn-meal-totals{background:#f5faf5;padding:4px 10px;font-size:9.5px;display:flex;gap:12px;color:#5a8a6a;font-weight:600;}
-    .prn-texto-livre{background:#fafafa;border:1px solid #e0e0e0;border-radius:5px;padding:8px 10px;font-size:10px;line-height:1.7;white-space:pre-wrap;}
+    .prn-food-macros{display:flex;gap:6px;font-size:10.5px;color:#5a8a6a;flex-shrink:0;}
+    .prn-meal-totals{background:#f5faf5;padding:5px 12px;font-size:11px;display:flex;gap:12px;color:#5a8a6a;font-weight:600;}
+    .prn-texto-livre{background:#fafafa;border:1px solid #e0e0e0;border-radius:5px;padding:10px 14px;font-size:12px;line-height:1.8;}
+    .prn-texto-livre ul,.prn-texto-livre ol{padding-left:20px;margin:4px 0;}
+    .prn-texto-livre li{margin:2px 0;}
+    .prn-texto-livre b,.prn-texto-livre strong{font-weight:700;}
+    .prn-texto-livre i,.prn-texto-livre em{font-style:italic;}
+    .prn-texto-livre u{text-decoration:underline;}
+    .prn-texto-livre br{display:block;content:'';margin-top:2px;}
     .prn-sintomas{display:flex;flex-wrap:wrap;gap:4px;}
-    .prn-sintoma-badge{background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:10px;font-size:9.5px;}
-    .prn-def-item{display:flex;gap:8px;padding:3px 0;font-size:10px;border-bottom:1px dotted #eee;}
+    .prn-sintoma-badge{background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;font-size:11px;}
+    .prn-def-item{display:flex;gap:8px;padding:4px 0;font-size:11.5px;border-bottom:1px dotted #eee;}
     .prn-def-nut{font-weight:600;flex:1;}
     .prn-assinatura{margin-top:24px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;}
     .prn-assin-box{text-align:center;width:200px;}
     .prn-assin-line{border-bottom:1px solid #333;margin-bottom:5px;height:30px;}
-    .prn-assin-label{font-size:9.5px;color:#666;}
-    .prn-rodape{margin-top:14px;padding-top:8px;border-top:1px solid #e0e0e0;font-size:9px;color:#888;display:flex;justify-content:space-between;}
-    .prn-antro-table{width:100%;border-collapse:collapse;font-size:9.5px;}
-    .prn-antro-table th{background:#0d3b2e;color:#fff;padding:4px 7px;text-align:left;font-size:9px;}
-    .prn-antro-table td{padding:3px 7px;border-bottom:1px solid #f0f0f0;}
+    .prn-assin-label{font-size:11px;color:#666;}
+    .prn-rodape{margin-top:14px;padding-top:8px;border-top:1px solid #e0e0e0;font-size:10.5px;color:#888;display:flex;justify-content:space-between;}
+    .prn-antro-table{width:100%;border-collapse:collapse;font-size:11px;}
+    .prn-antro-table th{background:#0d3b2e;color:#fff;padding:5px 8px;text-align:left;font-size:10.5px;}
+    .prn-antro-table td{padding:4px 8px;border-bottom:1px solid #f0f0f0;}
     .prn-antro-table tr:nth-child(even) td{background:#f5faf5;}
-    .total-bar{background:#0d3b2e;color:#fff;border-radius:5px;padding:5px 10px;
-      display:flex;gap:14px;font-size:10px;font-weight:600;margin-top:4px;}
+    .total-bar{background:#0d3b2e;color:#fff;border-radius:5px;padding:6px 12px;
+      display:flex;gap:14px;font-size:11.5px;font-weight:600;margin-top:4px;}
   `;
 
   const win=window.open('','_blank','width=900,height=700');
@@ -6254,7 +6336,8 @@ function onPlanoLivrePacChange(){
   if(!pacId) return;
   const planos = (DB.planoLivre||[]).filter(p=>p.pacId===pacId).sort((a,b)=>b.criado-a.criado);
   if(planos.length){
-    document.getElementById('plano-livre-texto').value = planos[0].texto||'';
+    const el = document.getElementById('plano-livre-texto');
+    if(el) el.innerHTML = planos[0].texto||'';
     document.getElementById('plano-livre-titulo').value = planos[0].titulo||'';
   }
 }
@@ -6267,7 +6350,9 @@ function salvarPlanoLivre(){
   const pacId = v('plano-livre-pac');
   if(!pacId){ toast('⚠️ Selecione um paciente!'); return; }
   const pac = DB.pac.find(p=>p.id===pacId);
-  const texto = document.getElementById('plano-livre-texto').value;
+  const el = document.getElementById('plano-livre-texto');
+  const html = el ? el.innerHTML : '';
+  const texto = el ? el.innerText : '';
   if(!texto.trim()){ toast('⚠️ O plano está vazio!'); return; }
   if(!DB.planoLivre) DB.planoLivre = [];
   const entry = {
@@ -6275,7 +6360,9 @@ function salvarPlanoLivre(){
     pacId, pacNome: pac.nome,
     titulo: v('plano-livre-titulo')||'Plano Alimentar',
     data: v('plano-livre-data')||new Date().toISOString().slice(0,10),
-    texto, criado: Date.now()
+    texto: html,   // salva HTML com formatação
+    textoPlano: texto, // salva texto puro para preview
+    criado: Date.now()
   };
   DB.planoLivre.push(entry);
   try{ localStorage.setItem('ns_plano_livre', JSON.stringify(DB.planoLivre)); }catch(e){}
@@ -6285,7 +6372,8 @@ function salvarPlanoLivre(){
 
 function limparPlanoLivre(){
   if(!confirm('Limpar o editor?')) return;
-  document.getElementById('plano-livre-texto').value = '';
+  const el = document.getElementById('plano-livre-texto');
+  if(el) el.innerHTML = '';
   document.getElementById('plano-livre-titulo').value = '';
 }
 
@@ -6298,7 +6386,8 @@ function carregarPlanoLivre(id){
     document.getElementById('plano-livre-pac').value = p.pacId;
     document.getElementById('plano-livre-titulo').value = p.titulo||'';
     document.getElementById('plano-livre-data').value = p.data||'';
-    document.getElementById('plano-livre-texto').value = p.texto||'';
+    const el = document.getElementById('plano-livre-texto');
+    if(el) el.innerHTML = p.texto||'';
     renderPlanoLivreSalvos();
   },80);
   toast('📄 Plano carregado!');
@@ -6335,7 +6424,7 @@ function renderPlanoLivreSalvos(){
             <div style="font-weight:600;font-size:13px;color:var(--g1)">${p.titulo||'Plano Alimentar'}</div>
             <div style="font-size:11px;color:var(--muted)">${p.pacNome} · ${p.data||'—'}</div>
           </div>
-          <div style="font-size:11px;color:var(--muted);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(p.texto||'').slice(0,80)}…</div>
+          <div style="font-size:11px;color:var(--muted);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${((p.textoPlano||p.texto||'').replace(/<[^>]+>/g,'')).slice(0,80)}…</div>
           <button class="btn btn-secondary btn-sm" onclick="carregarPlanoLivre('${p.id}')">📂 Carregar</button>
           <button class="btn btn-danger btn-sm" onclick="excluirPlanoLivre('${p.id}')">🗑️</button>
         </div>`).join('')}
@@ -6451,13 +6540,15 @@ const PLANO_TEMPLATES = {
 };
 
 function inserirTemplatePlanoLivre(tipo){
-  const ta = document.getElementById('plano-livre-texto');
-  if(!ta) return;
+  const el = document.getElementById('plano-livre-texto');
+  if(!el) return;
+  el.focus();
   const tpl = PLANO_TEMPLATES[tipo]||'';
-  const pos = ta.selectionStart||ta.value.length;
-  ta.value = ta.value.slice(0,pos) + tpl + ta.value.slice(pos);
-  ta.selectionStart = ta.selectionEnd = pos + tpl.length;
-  ta.focus();
+  // Convert plain text template to HTML (preserve line breaks and bold headers)
+  const htmlTpl = tpl
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+  document.execCommand('insertHTML', false, htmlTpl);
 }
 
 // Load plano livre from localStorage on init
@@ -7590,6 +7681,86 @@ function pgSalvarImagem(){
 // ════════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// RICH EDITOR — PLANO ALIMENTAR LIVRE
+// ════════════════════════════════════════════════════════════
+
+function planoExecCmd(cmd, val){
+  document.getElementById('plano-livre-texto').focus();
+  document.execCommand(cmd, false, val||null);
+  planoUpdateToolbar();
+}
+
+function planoSetFontSize(sz){
+  document.getElementById('plano-livre-texto').focus();
+  document.execCommand('fontSize', false, sz);
+  planoUpdateToolbar();
+}
+
+function planoEditorFocus(){
+  planoUpdateToolbar();
+}
+function planoEditorBlur(){
+  // Save selection so toolbar clicks don't lose it
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount) window._planoSavedRange = sel.getRangeAt(0).cloneRange();
+}
+
+// Restore saved selection before execCommand if focus was lost to toolbar button
+document._planoToolbarActive = false;
+(function(){
+  document.addEventListener('mousedown', function(e){
+    const tb = document.getElementById('plano-rich-toolbar');
+    if(tb && tb.contains(e.target)){
+      // Restore saved caret before command fires
+      setTimeout(function(){
+        const ed = document.getElementById('plano-livre-texto');
+        if(!ed) return;
+        if(window._planoSavedRange){
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(window._planoSavedRange);
+        }
+      },0);
+    }
+  });
+})();
+
+function planoEditorKeydown(e){
+  // Ctrl+B / I / U already handled by browser execCommand
+  planoUpdateToolbar();
+}
+
+function planoUpdateToolbar(){
+  const cmds = ['bold','italic','underline','strikeThrough',
+                 'justifyLeft','justifyCenter','justifyRight',
+                 'insertUnorderedList','insertOrderedList'];
+  cmds.forEach(cmd=>{
+    const btn = document.querySelector(`.plano-tb-btn[onclick*="${cmd}"]`);
+    if(btn){
+      try{
+        btn.classList.toggle('active', document.queryCommandState(cmd));
+      }catch(e){}
+    }
+  });
+  // Update color bar
+  try{
+    const col = document.queryCommandValue('foreColor');
+    if(col){
+      const bar = document.getElementById('plano-color-bar');
+      if(bar) bar.style.background = col;
+      const pick = document.getElementById('plano-color-pick');
+      if(pick) pick.value = rgbToHex(col)||pick.value;
+    }
+  }catch(e){}
+}
+
+function rgbToHex(rgb){
+  const m = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if(!m) return null;
+  return '#' + [m[1],m[2],m[3]].map(n=>parseInt(n).toString(16).padStart(2,'0')).join('');
+}
+
 function init(){
   loginVerificarSessao();
   const today=new Date().toISOString().slice(0,10);
