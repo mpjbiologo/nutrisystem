@@ -936,6 +936,7 @@ td:first-child{font-weight:600;color:var(--g2);}
     <div class="nav-item" onclick="goTo('relatorios')"><span class="icon">📈</span> Relatórios</div>
     <div class="nav-item" onclick="goTo('impressao')"><span class="icon">🖨️</span> Imprimir Prontuário</div>
     <div class="nav-section">Sistema</div>
+    <div class="nav-item" onclick="goTo('postagens')"><span class="icon">📱</span> Postagens</div>
     <div class="nav-item" onclick="goTo('config')"><span class="icon">⚙️</span> Configurações</div>
   </nav>
   <div class="sidebar-footer">
@@ -1512,6 +1513,215 @@ Exemplo:
         </p>
       </div>
     </div>
+  </div>
+</section>
+
+
+<!-- ════ POSTAGENS ════ -->
+<section class="page" id="page-postagens">
+  <div class="page-header">
+    <div><h2>📱 Gerador de Postagens</h2><p>Crie posts para Instagram com sua identidade visual</p></div>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+
+    <!-- PAINEL DE CONTROLE -->
+    <div style="width:300px;min-width:260px;display:flex;flex-direction:column;gap:12px">
+
+      <!-- TEXTO -->
+      <div class="card" style="padding:16px">
+        <div class="card-title" style="margin-bottom:12px">✏️ Texto</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="form-group"><label>Linha 1 do título</label><input id="pg-line1" value="Seu título aqui" oninput="pgUpdate()"/></div>
+          <div class="form-group"><label>Linha 2 (destaque colorido)</label><input id="pg-line2" value="com estilo" oninput="pgUpdate()"/></div>
+          <div class="form-group"><label>Descrição</label><textarea id="pg-desc" rows="3" oninput="pgUpdate()" style="resize:vertical">Escreva aqui uma descrição curta e envolvente sobre o assunto do post.</textarea></div>
+          <div class="form-group">
+            <label>Lista de itens (1 por linha)</label>
+            <textarea id="pg-list" rows="4" oninput="pgUpdate()" style="resize:vertical">Primeiro item da lista
+Segundo item da lista
+Terceiro item da lista</textarea>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label style="font-size:13px;color:var(--muted)">Usar numeração</label>
+            <label style="position:relative;width:36px;height:20px;flex-shrink:0">
+              <input type="checkbox" id="pg-listnum" onchange="pgUpdate()" style="display:none">
+              <div onclick="this.previousElementSibling.click()" id="pg-listnum-track" style="position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s">
+                <div id="pg-listnum-thumb" style="position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s"></div>
+              </div>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Botão central</label>
+            <input id="pg-tag1" value="👇 Leia a legenda" oninput="pgUpdate()"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL -->
+      <div class="card" style="padding:16px">
+        <div class="card-title" style="margin-bottom:12px">🎨 Visual</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+
+          <!-- Tema de cor -->
+          <div class="form-group">
+            <label>Tema de cor</label>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px" id="pg-theme-grid"></div>
+          </div>
+
+          <!-- Estilo de gradiente -->
+          <div class="form-group">
+            <label>Estilo de gradiente</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px" id="pg-grad-grid"></div>
+          </div>
+
+          <!-- Intensidade -->
+          <div class="form-group">
+            <label>Intensidade do gradiente</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="range" id="pg-grad-int" min="0" max="100" value="100" oninput="pgUpdate()" style="flex:1;-webkit-appearance:none;height:4px;background:var(--border);border-radius:4px;outline:none;padding:0;border:none">
+              <span id="pg-grad-int-val" style="font-size:11px;color:var(--g3);width:32px;text-align:right">100%</span>
+            </div>
+          </div>
+
+          <!-- Elementos decorativos -->
+          <div class="form-group">
+            <label>Elementos decorativos</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px" id="pg-deco-grid"></div>
+          </div>
+
+          <!-- Imagem -->
+          <div class="form-group">
+            <label>Imagem decorativa</label>
+            <div style="display:flex;gap:6px;margin-bottom:6px">
+              <button id="pg-img-tab-url" onclick="pgImgTab('url')" style="flex:1;padding:5px;background:rgba(76,184,122,.1);border:1.5px solid var(--g3);border-radius:6px;font-size:10px;font-weight:700;color:var(--g3);cursor:pointer;font-family:inherit">🔗 URL</button>
+              <button id="pg-img-tab-up" onclick="pgImgTab('upload')" style="flex:1;padding:5px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:6px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit">📁 Upload</button>
+            </div>
+            <div id="pg-img-url-panel">
+              <input id="pg-imgurl" placeholder="Cole a URL de uma imagem..." oninput="pgUpdate()"/>
+            </div>
+            <div id="pg-img-up-panel" style="display:none">
+              <label style="display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;color:var(--muted)">
+                📂 Escolher imagem <input type="file" id="pg-imgfile" accept="image/*" style="display:none" onchange="pgHandleUpload(this)">
+              </label>
+            </div>
+          </div>
+
+          <!-- Toggles -->
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label style="font-size:13px;color:var(--muted)">Mostrar imagem</label>
+            <label style="position:relative;width:36px;height:20px;flex-shrink:0">
+              <input type="checkbox" id="pg-showimg" checked onchange="pgUpdate()" style="display:none">
+              <div onclick="this.previousElementSibling.click()" id="pg-showimg-track" style="position:absolute;inset:0;background:var(--g3);border-radius:20px;cursor:pointer;transition:background .2s">
+                <div id="pg-showimg-thumb" style="position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transform:translateX(16px);transition:transform .2s"></div>
+              </div>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label style="font-size:13px;color:var(--muted)">Cor original da imagem</label>
+            <label style="position:relative;width:36px;height:20px;flex-shrink:0">
+              <input type="checkbox" id="pg-imgcolor" onchange="pgUpdate()" style="display:none">
+              <div onclick="this.previousElementSibling.click()" id="pg-imgcolor-track" style="position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s">
+                <div id="pg-imgcolor-thumb" style="position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s"></div>
+              </div>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label style="font-size:13px;color:var(--muted)">Mostrar WhatsApp</label>
+            <label style="position:relative;width:36px;height:20px;flex-shrink:0">
+              <input type="checkbox" id="pg-showwa" checked onchange="pgUpdate()" style="display:none">
+              <div onclick="this.previousElementSibling.click()" id="pg-showwa-track" style="position:absolute;inset:0;background:var(--g3);border-radius:20px;cursor:pointer;transition:background .2s">
+                <div id="pg-showwa-thumb" style="position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transform:translateX(16px);transition:transform .2s"></div>
+              </div>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FORMATO -->
+      <div class="card" style="padding:16px">
+        <div class="card-title" style="margin-bottom:12px">📐 Formato</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <button class="btn btn-secondary" id="pgfmt-quadrado" onclick="pgSetFormat('quadrado')" style="flex-direction:column;gap:4px;padding:10px 6px;font-size:11px;font-weight:700">
+            <div style="width:22px;height:22px;background:var(--border);border-radius:3px;margin:0 auto"></div>1:1
+          </button>
+          <button class="btn btn-primary" id="pgfmt-retrato" onclick="pgSetFormat('retrato')" style="flex-direction:column;gap:4px;padding:10px 6px;font-size:11px;font-weight:700">
+            <div style="width:18px;height:22px;background:rgba(255,255,255,.3);border-radius:3px;margin:0 auto"></div>4:5
+          </button>
+          <button class="btn btn-secondary" id="pgfmt-stories" onclick="pgSetFormat('stories')" style="flex-direction:column;gap:4px;padding:10px 6px;font-size:11px;font-weight:700">
+            <div style="width:13px;height:22px;background:var(--border);border-radius:3px;margin:0 auto"></div>9:16
+          </button>
+        </div>
+      </div>
+
+      <!-- AÇÕES -->
+      <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:8px">
+        <button id="pg-btn-salvar" class="btn btn-primary" onclick="pgSalvarImagem()">💾 Salvar como imagem</button>
+        <button class="btn btn-secondary" onclick="pgAbrirTelaCheia()">🖥️ Abrir em tela cheia</button>
+      </div>
+
+      <!-- INSTRUÇÕES -->
+      <div class="card" style="padding:16px">
+        <div class="card-title" style="margin-bottom:10px">📸 Como exportar em alta qualidade</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)">
+          <div style="display:flex;gap:8px"><span style="width:18px;height:18px;border-radius:50%;background:var(--g3);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span><span>Clique em <strong style="color:var(--g2)">Abrir em tela cheia</strong></span></div>
+          <div style="display:flex;gap:8px"><span style="width:18px;height:18px;border-radius:50%;background:var(--g3);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span><span>Pressione <strong style="color:var(--g2)">F12</strong> para abrir DevTools</span></div>
+          <div style="display:flex;gap:8px"><span style="width:18px;height:18px;border-radius:50%;background:var(--g3);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span><span><strong style="color:var(--g2)">Ctrl+Shift+M</strong> → modo responsivo</span></div>
+          <div style="display:flex;gap:8px"><span style="width:18px;height:18px;border-radius:50%;background:var(--g3);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span><span>Digite <strong style="color:var(--g2)">1080 × 1350</strong></span></div>
+          <div style="display:flex;gap:8px"><span style="width:18px;height:18px;border-radius:50%;background:var(--g3);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</span><span>Menu <strong style="color:var(--g2)">⋯ → Capturar screenshot</strong></span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PREVIEW DO POST -->
+    <div style="flex:1;display:flex;justify-content:center;align-items:flex-start;min-width:280px">
+      <div id="pg-post" data-format="retrato" style="position:relative;overflow:hidden;border-radius:6px;width:340px;height:425px;background:#1a3d1f;display:flex;flex-direction:column;justify-content:space-between;flex-shrink:0;box-shadow:0 8px 40px rgba(0,0,0,.25)">
+        <div id="pg-deco-c1" style="position:absolute;width:160px;height:160px;border-radius:50%;border:1.5px solid rgba(126,219,126,0.12);top:-50px;right:-50px;z-index:1"></div>
+        <div id="pg-deco-c2" style="position:absolute;width:90px;height:90px;border-radius:50%;border:1px solid rgba(126,219,126,0.08);top:14px;right:14px;z-index:1"></div>
+        <div id="pg-grad-layer" style="position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 80% 10%,rgba(100,200,100,0.25) 0%,transparent 60%),radial-gradient(ellipse at 10% 90%,rgba(60,140,70,0.3) 0%,transparent 55%)"></div>
+        <svg id="pg-deco-svg" style="position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden" width="100%" height="100%" viewBox="0 0 340 425" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"></svg>
+
+        <!-- Imagem -->
+        <div id="pg-img-wrap" style="position:relative;z-index:2;display:flex;justify-content:center;align-items:center;flex-shrink:0;overflow:hidden;width:100%;height:120px">
+          <img id="pg-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:contain;object-position:center;opacity:.92;border-radius:8px" onerror="this.style.display='none'"/>
+        </div>
+
+        <!-- Conteúdo -->
+        <div id="pg-content" style="position:relative;z-index:2;padding:16px 18px 0;flex:1;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden">
+          <div id="pg-title-wrap" style="font-family:'DM Serif Display',serif;font-weight:900;letter-spacing:-0.5px;max-width:90%;margin-bottom:10px">
+            <div id="pg-t1" style="font-size:24px;line-height:1.1;color:#f0f5f0;word-break:break-word">Seu título aqui</div>
+            <div id="pg-t2" style="font-size:24px;line-height:1.1;color:#7edb7e;font-style:italic;word-break:break-word">com estilo</div>
+          </div>
+          <div style="width:32px;height:2px;border-radius:2px;margin-bottom:10px" id="pg-divider" style="background:linear-gradient(90deg,#7edb7e,transparent)"></div>
+          <p id="pg-desc-el" style="font-size:11px;color:rgba(220,240,220,.75);line-height:1.6;font-weight:300;max-width:76%">Escreva uma descrição curta.</p>
+          <ul id="pg-list-el" style="list-style:none;margin:6px 0 0;padding:0;max-width:82%"></ul>
+        </div>
+
+        <!-- Tag -->
+        <div style="position:relative;z-index:2;display:flex;justify-content:center;padding-bottom:6px">
+          <div id="pg-tag-el" style="display:inline-block;background:rgba(100,200,100,.15);border:1px solid rgba(100,200,100,.35);color:#7edb7e;font-size:10px;font-weight:600;letter-spacing:.5px;padding:4px 12px;border-radius:20px">👇 Leia a legenda</div>
+        </div>
+
+        <!-- Footer -->
+        <div id="pg-footer" style="position:relative;z-index:2;background:rgba(0,0,0,.5);border-top:1px solid rgba(126,219,126,.2);padding:8px 16px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div id="pg-handle-el" style="font-family:'DM Serif Display',serif;font-size:13px;font-weight:700;color:#7edb7e"></div>
+            <div id="pg-wa-el" style="display:flex;align-items:center;gap:4px;margin-top:2px">
+              <svg style="width:10px;height:10px;flex-shrink:0" viewBox="0 0 32 32"><path fill="#25D366" d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.695-1.813A12.94 12.94 0 0 0 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.96 9.96 0 0 1-5.03-1.357l-.36-.214-4.57 1.077 1.1-4.453-.234-.372A9.96 9.96 0 0 1 6 15c0-5.523 4.477-10 10-10zm-3.27 5c-.2 0-.524.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.1 3.2 5.125 4.375 2.525.975 3.025.775 3.575.725.55-.05 1.775-.725 2.025-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35-.3-.15-1.775-.875-2.05-.975-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.265-.465-2.41-1.485-.89-.795-1.49-1.775-1.665-2.075-.175-.3-.018-.462.131-.61.134-.134.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.243-.583-.49-.5-.675-.51L12.73 10z"/></svg>
+              <span id="pg-wa-num" style="font-size:9px;color:rgba(220,240,220,.72)"></span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1px"><svg style="width:18px;height:18px;fill:none;stroke:rgba(220,240,220,.65);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span style="font-size:6px;color:rgba(200,230,200,.45);text-transform:uppercase">Curta</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1px"><svg style="width:18px;height:18px;fill:none;stroke:rgba(220,240,220,.65);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span style="font-size:6px;color:rgba(200,230,200,.45);text-transform:uppercase">Comente</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1px"><svg style="width:18px;height:18px;fill:none;stroke:rgba(220,240,220,.65);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span style="font-size:6px;color:rgba(200,230,200,.45);text-transform:uppercase">Compartilhe</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1px"><svg style="width:18px;height:18px;fill:none;stroke:rgba(220,240,220,.65);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span style="font-size:6px;color:rgba(200,230,200,.45);text-transform:uppercase">Salve</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -2533,6 +2743,7 @@ Exemplo:
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════
 // DATA STORE – localStorage
@@ -2634,6 +2845,7 @@ function goTo(page){
   if(page==='relatorios')renderRelatorios();
   if(page==='evolucao')populateEvolucaoSelect();
   if(page==='config'){ preencherFormConfig(); renderBackupStats(); }
+  if(page==='postagens'){ initPostagens(); }
   if(page==='pacientes')renderPacientes();
   closeSidebarMobile();
 }
@@ -6849,6 +7061,530 @@ function restaurarBackup(){
   renderTarefas(); renderBackupStats();
   backupLimparPreview();
   toast(`✅ Restaurado! ${DB.pac.length} pacientes · ${DB.consulta.length} consultas`);
+}
+
+
+// ════════════════════════════════════════════════════════════
+// POSTAGENS
+// ════════════════════════════════════════════════════════════
+
+const PG_THEMES = {
+  verde:    { bg:'#1a3d1f', accent:'#7edb7e', dark:'#0d1f0f', g1:'rgba(100,200,100,0.28)', g2:'rgba(60,140,70,0.33)',  footer:'rgba(0,0,0,.5)',  fborder:'rgba(126,219,126,.2)', title:'#f0f5f0' },
+  azul:     { bg:'#0d2a3d', accent:'#7ec8db', dark:'#041520', g1:'rgba(60,160,200,0.28)', g2:'rgba(30,100,150,0.33)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(126,200,219,.2)', title:'#f0f7ff' },
+  dourado:  { bg:'#2a1f0a', accent:'#dbb97e', dark:'#150e00', g1:'rgba(220,180,80,0.23)', g2:'rgba(160,120,40,0.28)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(219,185,126,.2)', title:'#fff8e8' },
+  roxo:     { bg:'#1e0a2a', accent:'#c084f5', dark:'#0d0415', g1:'rgba(160,80,240,0.28)', g2:'rgba(100,40,180,0.33)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(192,132,245,.2)', title:'#faf0ff' },
+  vermelho: { bg:'#2a0d0d', accent:'#f08080', dark:'#150404', g1:'rgba(220,70,70,0.25)',  g2:'rgba(160,30,30,0.3)',  footer:'rgba(0,0,0,.5)',  fborder:'rgba(240,128,128,.2)', title:'#fff0f0' },
+  escuro:   { bg:'#111111', accent:'#e0e0e0', dark:'#000',    g1:'rgba(200,200,200,0.1)', g2:'rgba(150,150,150,0.12)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(200,200,200,.15)',title:'#ffffff'  },
+  claro:    { bg:'#eef5ee', accent:'#2a7a2a', dark:'#f0f5f0', g1:'rgba(60,160,60,0.15)', g2:'rgba(40,120,40,0.12)', footer:'rgba(255,255,255,.6)', fborder:'rgba(42,122,42,.2)', title:'#1a3d1f', lightBg:true },
+  salmon:   { bg:'#2a0f08', accent:'#f0a080', dark:'#150604', g1:'rgba(240,110,60,0.23)', g2:'rgba(200,60,30,0.28)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(240,160,128,.2)', title:'#fff5f0' },
+  petrol:   { bg:'#071c1c', accent:'#4ecdc4', dark:'#020d0d', g1:'rgba(78,205,196,0.23)', g2:'rgba(30,150,140,0.28)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(78,205,196,.2)',  title:'#e0faf8' },
+  rose:     { bg:'#280a18', accent:'#f472b6', dark:'#140008', g1:'rgba(244,114,182,0.23)',g2:'rgba(190,40,110,0.28)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(244,114,182,.2)', title:'#fff0f5' },
+  navy:     { bg:'#060d28', accent:'#93c5fd', dark:'#020818', g1:'rgba(100,140,240,0.25)',g2:'rgba(40,70,190,0.3)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(147,197,253,.2)', title:'#eef2ff' },
+  terra:    { bg:'#1e1208', accent:'#d4a26a', dark:'#0e0804', g1:'rgba(210,150,80,0.23)', g2:'rgba(150,90,30,0.28)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(212,162,106,.2)', title:'#fff5ec' },
+  oliva:    { bg:'#1a1e08', accent:'#bef264', dark:'#0c1003', g1:'rgba(180,230,60,0.25)',g2:'rgba(110,150,20,0.3)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(190,242,100,.2)',  title:'#f5f8e0' },
+  grafite:  { bg:'#1c1c1e', accent:'#f0c060', dark:'#0a0a0b', g1:'rgba(240,192,80,0.2)', g2:'rgba(170,130,40,0.25)',footer:'rgba(0,0,0,.5)', fborder:'rgba(240,192,96,.2)', title:'#faf6ec' },
+  ceu:      { bg:'#0a1628', accent:'#7dd3fc', dark:'#040b14', g1:'rgba(100,200,250,0.25)',g2:'rgba(40,110,210,0.3)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(125,211,252,.2)', title:'#eef8ff' },
+  beetroot: { bg:'#280a1a', accent:'#f472b6', dark:'#14040d', g1:'rgba(230,60,140,0.25)',g2:'rgba(170,20,80,0.3)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(244,114,182,.2)', title:'#ffe8f4' },
+  menta:    { bg:'#071a14', accent:'#6ee7b7', dark:'#030d09', g1:'rgba(100,230,180,0.25)',g2:'rgba(40,160,110,0.3)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(110,231,183,.2)', title:'#effffa' },
+  lavanda:  { bg:'#120a28', accent:'#c4b5fd', dark:'#08041a', g1:'rgba(180,160,250,0.25)',g2:'rgba(120,90,220,0.3)',footer:'rgba(0,0,0,.5)',  fborder:'rgba(196,181,253,.2)', title:'#f5f0ff' },
+  branco:   { bg:'#f8fafc', accent:'#334155', dark:'#e2e8f0', g1:'rgba(100,120,160,0.12)',g2:'rgba(60,80,120,0.1)',footer:'rgba(255,255,255,.6)', fborder:'rgba(51,65,85,.2)', title:'#0f172a', lightBg:true },
+  por:      { bg:'#1a0a14', accent:'#fb923c', dark:'#0d0508', g1:'rgba(251,146,60,0.3)',  g2:'rgba(220,60,30,0.3)', footer:'rgba(0,0,0,.5)',  fborder:'rgba(251,146,60,.2)',  title:'#fff7ed' }
+};
+
+const PG_GRADS = {
+  padrao:   (t,i) => `radial-gradient(ellipse at 80% 10%,${sa(t.g1,i)} 0%,transparent 60%),radial-gradient(ellipse at 10% 90%,${sa(t.g2,i)} 0%,transparent 55%)`,
+  diagonal: (t,i) => `linear-gradient(135deg,${t.bg},${sa(t.g1,i)})`,
+  sunset:   (t,i) => `linear-gradient(180deg,${t.bg} 0%,${sa(t.g1,i*0.9)} 100%)`,
+  aurora:   (t,i) => `linear-gradient(135deg,${t.bg} 0%,${sa(t.g1,i)} 45%,${t.bg} 100%)`,
+  radial:   (t,i) => `radial-gradient(circle at 55% 38%,${sa(t.g1,i)} 0%,${t.bg} 65%)`,
+  tricolor: (t,i) => `linear-gradient(160deg,${t.bg} 0%,${sa(t.g1,i)} 50%,rgba(0,0,0,${(0.4*i).toFixed(2)}) 100%)`,
+  horiz:    (t,i) => `linear-gradient(90deg,${t.bg},${sa(t.g1,i)})`,
+  conico:   (t,i) => `conic-gradient(from 135deg at 60% 40%,${t.bg},${sa(t.g1,i)},${t.bg},${sa(t.g2,i)},${t.bg})`,
+};
+
+const PG_GRAD_LABELS = { padrao:'Padrão', diagonal:'Diagonal', sunset:'Sunset', aurora:'Aurora', radial:'Radial', tricolor:'Tri-cor', horiz:'Horiz.', conico:'Cônico' };
+const PG_GRAD_BG = {
+  padrao:'radial-gradient(ellipse at 80% 10%,rgba(126,219,126,0.5),transparent 60%),radial-gradient(ellipse at 10% 90%,rgba(60,140,70,0.5),transparent 55%),#1a3d1f',
+  diagonal:'linear-gradient(135deg,#071c1c,#4ecdc4 80%)', sunset:'linear-gradient(180deg,#1a0a14 0%,#fb923c 100%)',
+  aurora:'linear-gradient(135deg,#071c1c 0%,#4ecdc4 45%,#1e0a2a 100%)', radial:'radial-gradient(circle at 50% 40%,rgba(126,219,126,0.7),#0a0a14 70%)',
+  tricolor:'linear-gradient(160deg,#1e0a2a 0%,#c084f5 50%,#000 100%)', horiz:'linear-gradient(90deg,#0d2a3d,#7ec8db 100%)',
+  conico:'conic-gradient(from 135deg,#1a3d1f,#7edb7e,#0d2a3d,#1a3d1f)',
+};
+
+const PG_DECOS = [
+  { k:'circulos',  lbl:'Círculos',  svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/>' },
+  { k:'estrelas',  lbl:'Estrelas',  svg:'<polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9"/>' },
+  { k:'pontos',    lbl:'Pontos',    svg:'<circle cx="5" cy="5" r="2" fill="currentColor"/><circle cx="12" cy="5" r="2" fill="currentColor"/><circle cx="19" cy="5" r="2" fill="currentColor"/><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/><circle cx="5" cy="19" r="2" fill="currentColor"/><circle cx="12" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="19" r="2" fill="currentColor"/>' },
+  { k:'cruz',      lbl:'Cruz',      svg:'<line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/>' },
+  { k:'diamante',  lbl:'Diamante',  svg:'<rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/>' },
+  { k:'arco',      lbl:'Arco',      svg:'<path d="M3,20 Q12,3 21,20"/>' },
+  { k:'linhas',    lbl:'Linhas',    svg:'<line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/>' },
+  { k:'hexagono',  lbl:'Hexágono',  svg:'<polygon points="12,2 20.5,7 20.5,17 12,22 3.5,17 3.5,7"/>' },
+  { k:'triangulo', lbl:'Triângulo', svg:'<polygon points="12,3 22,20 2,20"/>' },
+  { k:'ondas',     lbl:'Ondas',     svg:'<path d="M2,12 Q6,8 10,12 Q14,16 18,12 Q20,10 22,12"/>' },
+  { k:'sparkle',   lbl:'Sparkle',   svg:'<line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>' },
+  { k:'grade',     lbl:'Grade',     svg:'<line x1="8" y1="2" x2="8" y2="22"/><line x1="16" y1="2" x2="16" y2="22"/><line x1="2" y1="8" x2="22" y2="8"/><line x1="2" y1="16" x2="22" y2="16"/>' },
+];
+
+let _pgTheme    = 'verde';
+let _pgGrad     = 'padrao';
+let _pgFormat   = 'retrato';
+let _pgUploadedSrc = '';
+let _pgImgTab   = 'url';
+const _pgActiveDecos = new Set(['circulos']);
+
+function sa(rgba, f){
+  return rgba.replace(/[\d.]+\)$/, m => (parseFloat(m)*f).toFixed(3)+')');
+}
+
+const PG_FORMATS = {
+  retrato:  { w:340, h:425, imgH:120, fs:24, descFs:11, svgVB:'0 0 340 425' },
+  quadrado: { w:340, h:340, imgH:100, fs:20, descFs:10, svgVB:'0 0 340 340' },
+  stories:  { w:240, h:426, imgH:140, fs:18, descFs:10, svgVB:'0 0 240 426' },
+};
+
+function initPostagens(){
+  pgRenderThemeGrid();
+  pgRenderGradGrid();
+  pgRenderDecoGrid();
+  pgUpdate();
+}
+
+function pgRenderThemeGrid(){
+  const grid = document.getElementById('pg-theme-grid');
+  if(!grid) return;
+  const labels = { verde:'Verde', azul:'Azul', dourado:'Dourado', roxo:'Roxo', vermelho:'Vinho',
+    escuro:'Escuro', claro:'Claro', salmon:'Coral', petrol:'Petróleo', rose:'Rosê',
+    navy:'Navy', terra:'Terra', oliva:'Oliva', grafite:'Grafite', ceu:'Céu',
+    beetroot:'Beetroot', menta:'Menta', lavanda:'Lavanda', branco:'Branco', por:'Pôr-do-sol' };
+  const bgs = {
+    verde:'linear-gradient(135deg,#1a3d1f,#2a6630)', azul:'linear-gradient(135deg,#0d2a3d,#1a4d6e)',
+    dourado:'linear-gradient(135deg,#2a1f0a,#4a3510)', roxo:'linear-gradient(135deg,#1e0a2a,#3d1460)',
+    vermelho:'linear-gradient(135deg,#2a0d0d,#5c1a1a)', escuro:'linear-gradient(135deg,#111,#222)',
+    claro:'linear-gradient(135deg,#eef5ee,#c8e0c8)', salmon:'linear-gradient(135deg,#2a0f08,#5a2010)',
+    petrol:'linear-gradient(135deg,#071c1c,#0d3535)', rose:'linear-gradient(135deg,#280a18,#5a1535)',
+    navy:'linear-gradient(135deg,#060d28,#0d2060)', terra:'linear-gradient(135deg,#1e1208,#3d2510)',
+    oliva:'linear-gradient(135deg,#1a1e08,#36400f)', grafite:'linear-gradient(135deg,#1c1c1e,#2e2e30)',
+    ceu:'linear-gradient(135deg,#0a1628,#142d50)', beetroot:'linear-gradient(135deg,#280a1a,#501530)',
+    menta:'linear-gradient(135deg,#071a14,#0d3325)', lavanda:'linear-gradient(135deg,#120a28,#251550)',
+    branco:'linear-gradient(135deg,#f8fafc,#dde4ee)', por:'linear-gradient(135deg,#1a0a14,#3d1a08)',
+  };
+  grid.innerHTML = Object.keys(PG_THEMES).map(k=>`
+    <div onclick="pgSetTheme('${k}')" id="pgt-${k}" title="${labels[k]||k}"
+      style="aspect-ratio:1;border-radius:6px;cursor:pointer;border:2px solid ${k===_pgTheme?'#fff':'transparent'};background:${bgs[k]||'#222'};transition:border-color .15s,transform .15s;position:relative;overflow:hidden"
+      onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">
+      <span style="position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:6.5px;color:rgba(255,255,255,.85);font-weight:600;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.5)">${labels[k]||k}</span>
+    </div>`).join('');
+}
+
+function pgRenderGradGrid(){
+  const grid = document.getElementById('pg-grad-grid');
+  if(!grid) return;
+  grid.innerHTML = Object.keys(PG_GRADS).map(k=>`
+    <div onclick="pgSetGrad('${k}')" id="pgg-${k}" title="${PG_GRAD_LABELS[k]||k}"
+      style="aspect-ratio:1;border-radius:6px;cursor:pointer;border:2px solid ${k===_pgGrad?'#fff':'transparent'};background:${PG_GRAD_BG[k]||'#222'};transition:border-color .15s,transform .15s;position:relative;overflow:hidden"
+      onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">
+      <span style="position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:6.5px;color:rgba(255,255,255,.85);font-weight:600;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.5)">${PG_GRAD_LABELS[k]||k}</span>
+    </div>`).join('');
+}
+
+function pgRenderDecoGrid(){
+  const grid = document.getElementById('pg-deco-grid');
+  if(!grid) return;
+  grid.innerHTML = PG_DECOS.map(d=>{
+    const active = _pgActiveDecos.has(d.k);
+    return `<button id="pgd-${d.k}" onclick="pgToggleDeco('${d.k}')"
+      style="background:${active?'rgba(76,184,122,.12)':'var(--input-bg)'};border:1.5px solid ${active?'var(--g3)':'var(--input-border)'};border-radius:8px;padding:6px 3px 4px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;color:${active?'var(--g3)':'var(--muted)'};font-size:8px;font-weight:700;text-transform:uppercase;font-family:inherit;transition:all .15s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">${d.svg}</svg>${d.lbl}
+    </button>`;
+  }).join('');
+}
+
+function pgSetTheme(k){
+  _pgTheme = k;
+  document.querySelectorAll('#pg-theme-grid > div').forEach(el=>{
+    el.style.borderColor = el.id==='pgt-'+k ? '#fff' : 'transparent';
+  });
+  pgApplyVisual();
+}
+
+function pgSetGrad(k){
+  _pgGrad = k;
+  document.querySelectorAll('#pg-grad-grid > div').forEach(el=>{
+    el.style.borderColor = el.id==='pgg-'+k ? '#fff' : 'transparent';
+  });
+  pgApplyVisual();
+}
+
+function pgToggleDeco(k){
+  if(_pgActiveDecos.has(k)) _pgActiveDecos.delete(k);
+  else _pgActiveDecos.add(k);
+  pgRenderDecoGrid();
+  pgRenderDecos();
+}
+
+function pgImgTab(tab){
+  _pgImgTab = tab;
+  const isUrl = tab==='url';
+  document.getElementById('pg-img-url-panel').style.display = isUrl ? '' : 'none';
+  document.getElementById('pg-img-up-panel').style.display  = isUrl ? 'none' : '';
+  const btnUrl = document.getElementById('pg-img-tab-url');
+  const btnUp  = document.getElementById('pg-img-tab-up');
+  if(btnUrl){ btnUrl.style.background = isUrl?'rgba(76,184,122,.1)':'var(--input-bg)'; btnUrl.style.borderColor = isUrl?'var(--g3)':'var(--input-border)'; btnUrl.style.color = isUrl?'var(--g3)':'var(--muted)'; }
+  if(btnUp) { btnUp.style.background  = !isUrl?'rgba(76,184,122,.1)':'var(--input-bg)'; btnUp.style.borderColor  = !isUrl?'var(--g3)':'var(--input-border)'; btnUp.style.color = !isUrl?'var(--g3)':'var(--muted)'; }
+  if(isUrl){ _pgUploadedSrc=''; pgUpdate(); }
+}
+
+function pgApplyVisual(){
+  const t   = PG_THEMES[_pgTheme];
+  const int = (document.getElementById('pg-grad-int')?.value||100)/100;
+  const post = document.getElementById('pg-post');
+  if(!post||!t) return;
+  post.style.background = t.bg;
+  const gradFn = PG_GRADS[_pgGrad] || PG_GRADS.padrao;
+  document.getElementById('pg-grad-layer').style.background = gradFn(t, int);
+  document.getElementById('pg-t1').style.color    = t.title;
+  document.getElementById('pg-t2').style.color    = t.accent;
+  document.getElementById('pg-divider').style.background = 'linear-gradient(90deg,'+t.accent+',transparent)';
+  document.getElementById('pg-tag-el').style.color        = t.accent;
+  document.getElementById('pg-tag-el').style.borderColor  = t.accent+'55';
+  document.getElementById('pg-handle-el').style.color     = t.accent;
+  document.getElementById('pg-footer').style.background   = t.footer;
+  document.getElementById('pg-footer').style.borderTopColor = t.fborder;
+  document.getElementById('pg-deco-c1').style.borderColor = t.accent+'30';
+  document.getElementById('pg-deco-c2').style.borderColor = t.accent+'1a';
+  pgRenderDecos();
+  // list bullets style
+  let s = document.getElementById('_pg_list_style');
+  if(!s){ s=document.createElement('style'); s.id='_pg_list_style'; document.head.appendChild(s); }
+  s.textContent = `#pg-list-el li::before{color:${t.accent} !important;}`;
+}
+
+function pgRenderDecos(){
+  const svg = document.getElementById('pg-deco-svg');
+  if(!svg) return;
+  svg.innerHTML = '';
+  const t = PG_THEMES[_pgTheme];
+  const a = t.accent;
+  const fmt = PG_FORMATS[_pgFormat]||PG_FORMATS.retrato;
+  svg.setAttribute('viewBox', fmt.svgVB);
+  const W = parseFloat(fmt.svgVB.split(' ')[2]);
+  const H = parseFloat(fmt.svgVB.split(' ')[3]);
+  const c1 = document.getElementById('pg-deco-c1');
+  const c2 = document.getElementById('pg-deco-c2');
+  if(c1) c1.style.opacity = _pgActiveDecos.has('circulos')?'1':'0';
+  if(c2) c2.style.opacity = _pgActiveDecos.has('circulos')?'1':'0';
+
+  function el(tag,attrs){ const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const[k,v] of Object.entries(attrs)) e.setAttribute(k,v); return e; }
+  function grp(op){ const g=el('g',{opacity:op}); svg.appendChild(g); return g; }
+  function starPts(cx,cy,r){ return Array.from({length:10},(_,i)=>{ const ang=Math.PI/180*(36*i-90); const rad=i%2===0?r:r*0.45; return (cx+rad*Math.cos(ang)).toFixed(1)+','+(cy+rad*Math.sin(ang)).toFixed(1); }).join(' '); }
+
+  if(_pgActiveDecos.has('estrelas')){
+    const g=grp(0.25);
+    [[W*.75,H*.12,14],[W*.88,H*.35,9],[W*.6,H*.52,8],[W*.25,H*.6,6],[W*.85,H*.22,6]].forEach(([x,y,s])=>{
+      g.appendChild(el('polygon',{points:starPts(x,y,s),fill:a}));
+    });
+  }
+  if(_pgActiveDecos.has('pontos')){
+    const g=grp(0.2);
+    for(let c=0;c<4;c++) for(let r=0;r<7;r++){
+      g.appendChild(el('circle',{cx:W*.75+c*15,cy:H*.12+r*40,r:'2.5',fill:a}));
+    }
+  }
+  if(_pgActiveDecos.has('cruz')){
+    const g=grp(0.18);
+    [[W*.82,H*.18,11],[W*.5,H*.5,8],[W*.25,H*.25,7],[W*.88,H*.55,9]].forEach(([x,y,s])=>{
+      g.appendChild(el('line',{x1:x-s,y1:y,x2:x+s,y2:y,stroke:a,'stroke-width':'1.5'}));
+      g.appendChild(el('line',{x1:x,y1:y-s,x2:x,y2:y+s,stroke:a,'stroke-width':'1.5'}));
+    });
+  }
+  if(_pgActiveDecos.has('diamante')){
+    const g=grp(0.18);
+    [[W*.82,H*.13,18],[W*.25,H*.4,12],[W*.88,H*.5,14],[W*.5,H*.08,10]].forEach(([x,y,s])=>{
+      const pts=x+','+(y-s)+' '+(x+s)+','+y+' '+x+','+(y+s)+' '+(x-s)+','+y;
+      g.appendChild(el('polygon',{points:pts,fill:'none',stroke:a,'stroke-width':'1.2'}));
+    });
+  }
+  if(_pgActiveDecos.has('arco')){
+    const g=grp(0.14);
+    [[-W*.1,H*.8,W*.2],[ W*.35,H*.65,W*.14],[W*.7,H*.75,W*.18]].forEach(([x,y,r])=>{
+      g.appendChild(el('circle',{cx:x,cy:y,r:r,fill:'none',stroke:a,'stroke-width':'1'}));
+    });
+  }
+  if(_pgActiveDecos.has('linhas')){
+    const g=grp(0.11);
+    for(let i=0;i<6;i++){
+      g.appendChild(el('line',{x1:W*.58+i*15,y1:0,x2:W*.58+i*15,y2:H,stroke:a,'stroke-width':'0.8'}));
+    }
+  }
+  if(_pgActiveDecos.has('hexagono')){
+    const g=grp(0.16);
+    [[W*.85,H*.16,24],[W*.25,H*.3,17],[W*.9,H*.52,20],[W*.5,H*.68,13]].forEach(([x,y,r])=>{
+      const pts=Array.from({length:6},(_,i)=>{ const ang=Math.PI/180*(60*i-30); return (x+r*Math.cos(ang)).toFixed(1)+','+(y+r*Math.sin(ang)).toFixed(1); }).join(' ');
+      g.appendChild(el('polygon',{points:pts,fill:'none',stroke:a,'stroke-width':'1.2'}));
+    });
+  }
+  if(_pgActiveDecos.has('triangulo')){
+    const g=grp(0.16);
+    [[W*.85,H*.1,20],[W*.25,H*.45,13],[W*.9,H*.65,16],[W*.45,H*.17,11]].forEach(([x,y,s])=>{
+      const pts=x+','+(y-s)+' '+(x+s)+','+(y+s)+' '+(x-s)+','+(y+s);
+      g.appendChild(el('polygon',{points:pts,fill:'none',stroke:a,'stroke-width':'1.2'}));
+    });
+  }
+  if(_pgActiveDecos.has('ondas')){
+    const g=grp(0.13);
+    [H*.2,H*.4,H*.6].forEach(y=>{
+      g.appendChild(el('path',{d:`M0,${y} Q${W*.13},${y-20} ${W*.26},${y} Q${W*.4},${y+20} ${W*.53},${y} Q${W*.67},${y-20} ${W*.8},${y} Q${W*.93},${y+20} ${W},${y}`,fill:'none',stroke:a,'stroke-width':'1'}));
+    });
+  }
+  if(_pgActiveDecos.has('sparkle')){
+    const g=grp(0.22);
+    [[W*.82,H*.13,13],[W*.35,H*.35,8],[W*.9,H*.43,10],[W*.55,H*.65,7],[W*.2,H*.7,8]].forEach(([x,y,s])=>{
+      const h=s*.4;
+      ['0','45','90','135'].forEach(angle=>{
+        const rad=parseFloat(angle)*Math.PI/180;
+        g.appendChild(el('line',{x1:x+h*Math.cos(rad),y1:y+h*Math.sin(rad),x2:x+s*Math.cos(rad),y2:y+s*Math.sin(rad),stroke:a,'stroke-width':'1.2','stroke-linecap':'round'}));
+        g.appendChild(el('line',{x1:x-h*Math.cos(rad),y1:y-h*Math.sin(rad),x2:x-s*Math.cos(rad),y2:y-s*Math.sin(rad),stroke:a,'stroke-width':'1.2','stroke-linecap':'round'}));
+      });
+    });
+  }
+  if(_pgActiveDecos.has('grade')){
+    const g=grp(0.08);
+    for(let x=W*.55;x<=W;x+=25) g.appendChild(el('line',{x1:x,y1:0,x2:x,y2:H,stroke:a,'stroke-width':'0.6'}));
+    for(let y=0;y<=H;y+=25)     g.appendChild(el('line',{x1:W*.55,y1:y,x2:W,y2:y,stroke:a,'stroke-width':'0.6'}));
+  }
+}
+
+function pgSetFormat(fmt){
+  _pgFormat = fmt;
+  ['quadrado','retrato','stories'].forEach(f=>{
+    const btn = document.getElementById('pgfmt-'+f);
+    if(!btn) return;
+    btn.className = 'btn '+(f===fmt?'btn-primary':'btn-secondary');
+    btn.style.cssText = 'flex-direction:column;gap:4px;padding:10px 6px;font-size:11px;font-weight:700';
+  });
+  const d = PG_FORMATS[fmt];
+  const post = document.getElementById('pg-post');
+  if(!post) return;
+  post.style.width  = d.w+'px';
+  post.style.height = d.h+'px';
+  document.getElementById('pg-img-wrap').style.height = d.imgH+'px';
+  document.getElementById('pg-t1').style.fontSize = d.fs+'px';
+  document.getElementById('pg-t2').style.fontSize = d.fs+'px';
+  document.getElementById('pg-desc-el').style.fontSize = d.descFs+'px';
+  pgRenderDecos();
+}
+
+function pgHandleUpload(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ _pgUploadedSrc=e.target.result; pgUpdate(); };
+  reader.readAsDataURL(file);
+}
+
+function pgUpdate(){
+  const t1      = document.getElementById('pg-line1')?.value||'';
+  const t2      = document.getElementById('pg-line2')?.value||'';
+  const desc    = document.getElementById('pg-desc')?.value||'';
+  const tag     = document.getElementById('pg-tag1')?.value||'';
+  const listRaw = document.getElementById('pg-list')?.value||'';
+  const listNum = document.getElementById('pg-listnum')?.checked;
+  const showImg = document.getElementById('pg-showimg')?.checked;
+  const imgColor= document.getElementById('pg-imgcolor')?.checked;
+  const showWa  = document.getElementById('pg-showwa')?.checked;
+  const imgUrl  = _pgUploadedSrc||document.getElementById('pg-imgurl')?.value||'';
+
+  // Update grad intensity label
+  const intVal = document.getElementById('pg-grad-int')?.value||100;
+  const intEl  = document.getElementById('pg-grad-int-val');
+  if(intEl) intEl.textContent = intVal+'%';
+
+  document.getElementById('pg-t1').textContent = t1;
+  document.getElementById('pg-t2').textContent = t2;
+  document.getElementById('pg-desc-el').textContent = desc;
+  document.getElementById('pg-tag-el').textContent  = tag;
+
+  // Toggle visuals
+  ['pg-listnum','pg-showimg','pg-imgcolor','pg-showwa'].forEach(id=>{
+    const cb=document.getElementById(id); if(!cb) return;
+    const track=document.getElementById(id+'-track');
+    const thumb=document.getElementById(id+'-thumb');
+    if(track) track.style.background = cb.checked?'var(--g3)':'var(--border)';
+    if(thumb) thumb.style.transform  = cb.checked?'translateX(16px)':'translateX(0)';
+  });
+
+  // Lista
+  const listEl = document.getElementById('pg-list-el');
+  const items  = listRaw.split('\n').map(s=>s.trim()).filter(s=>s);
+  listEl.innerHTML = items.map(i=>`<li style="display:flex;align-items:flex-start;gap:6px;font-size:10px;color:rgba(220,240,220,.8);line-height:1.5;font-weight:300;margin-bottom:3px">${i}</li>`).join('');
+  listEl.className = listNum?'numbered':'';
+
+  // Imagem
+  const imgWrap = document.getElementById('pg-img-wrap');
+  const img     = document.getElementById('pg-img');
+  if(showImg && imgUrl){
+    img.src = imgUrl; img.style.display='block';
+    img.style.filter = imgColor?'none':'saturate(0) brightness(1.4)';
+    imgWrap.style.display='flex';
+  } else {
+    img.style.display='none'; imgWrap.style.display='none';
+  }
+
+  // WhatsApp / identidade das configurações
+  const waEl  = document.getElementById('pg-wa-el');
+  const waNum = document.getElementById('pg-wa-num');
+  if(waEl)  waEl.style.display = showWa?'flex':'none';
+  document.getElementById('pg-handle-el').textContent = CFG.ig||'';
+  if(waNum) waNum.textContent = CFG.tel||'';
+
+  pgApplyVisual();
+}
+
+
+function pgBuildHTML(){
+  const t       = PG_THEMES[_pgTheme];
+  const line1   = document.getElementById('pg-line1').value;
+  const line2   = document.getElementById('pg-line2').value;
+  const desc    = document.getElementById('pg-desc').value;
+  const tag     = document.getElementById('pg-tag1').value;
+  const listRaw = document.getElementById('pg-list').value;
+  const listNum = document.getElementById('pg-listnum').checked;
+  const showImg = document.getElementById('pg-showimg').checked;
+  const imgColor= document.getElementById('pg-imgcolor').checked;
+  const showWa  = document.getElementById('pg-showwa').checked;
+  const imgUrl  = _pgUploadedSrc || document.getElementById('pg-imgurl').value;
+  const handle  = CFG.ig  || '';
+  const wa      = CFG.tel || '';
+  const items   = listRaw.split('\n').map(s=>s.trim()).filter(s=>s);
+  const gradInt = (document.getElementById('pg-grad-int')?.value||100)/100;
+
+  // Gradient CSS using selected style
+  function saB(rgba,f){ return rgba.replace(/[\d.]+\)$/, m=>(parseFloat(m)*f).toFixed(3)+')'); }
+  const gradMap = {
+    padrao:   `radial-gradient(ellipse at 80% 10%,${saB(t.g1,gradInt)} 0%,transparent 60%),radial-gradient(ellipse at 10% 90%,${saB(t.g2,gradInt)} 0%,transparent 55%)`,
+    diagonal: `linear-gradient(135deg,${t.bg},${saB(t.g1,gradInt)})`,
+    sunset:   `linear-gradient(180deg,${t.bg} 0%,${saB(t.g1,gradInt*0.9)} 100%)`,
+    aurora:   `linear-gradient(135deg,${t.bg} 0%,${saB(t.g1,gradInt)} 45%,${t.bg} 100%)`,
+    radial:   `radial-gradient(circle at 55% 38%,${saB(t.g1,gradInt)} 0%,${t.bg} 65%)`,
+    tricolor: `linear-gradient(160deg,${t.bg} 0%,${saB(t.g1,gradInt)} 50%,rgba(0,0,0,${(0.4*gradInt).toFixed(2)}) 100%)`,
+    horiz:    `linear-gradient(90deg,${t.bg},${saB(t.g1,gradInt)})`,
+    conico:   `conic-gradient(from 135deg at 60% 40%,${t.bg},${saB(t.g1,gradInt)},${t.bg},${saB(t.g2,gradInt)},${t.bg})`,
+  };
+  const gradCSS = gradMap[_pgGrad] || gradMap.padrao;
+
+  const listCSS = listNum
+    ? '#list{counter-reset:lc;}#list li{counter-increment:lc;}#list li::before{content:counter(lc)". ";font-weight:700;color:'+t.accent+';}'
+    : '#list li::before{content:"• ";color:'+t.accent+';font-size:1.1em;}';
+  const listHTML = items.length
+    ? '<ul id="list" style="list-style:none;margin:1.5vw 0 0;padding:0;max-width:82%">'
+      + items.map(i=>'<li style="display:flex;align-items:flex-start;gap:.5vw;font-size:clamp(12px,2vw,24px);color:rgba(220,240,220,.8);line-height:1.5;font-weight:300;margin-bottom:.4vw">'+i+'</li>').join('')
+      + '</ul>' : '';
+  const imgFilter = imgColor ? 'none' : 'saturate(0) brightness(1.4)';
+  const imgHTML = showImg && imgUrl
+    ? '<div style="display:flex;justify-content:center;align-items:center;width:100%;height:clamp(100px,18vw,200px);overflow:hidden;flex-shrink:0"><img style="max-width:90%;max-height:100%;object-fit:contain;opacity:.92;border-radius:1vw;filter:'+imgFilter+'" src="'+imgUrl+'" alt="" onerror="this.style.display=\'none\'"/></div>'
+    : '';
+  const waHTML = showWa
+    ? '<div style="display:flex;align-items:center;gap:.5vw;margin-top:.4vw"><svg style="width:clamp(18px,2.5vw,30px);height:clamp(18px,2.5vw,30px)" viewBox="0 0 32 32"><path fill="#25D366" d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.5L4 29l7.695-1.813A12.94 12.94 0 0 0 16 28c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.96 9.96 0 0 1-5.03-1.357l-.36-.214-4.57 1.077 1.1-4.453-.234-.372A9.96 9.96 0 0 1 6 15c0-5.523 4.477-10 10-10zm-3.27 5c-.2 0-.524.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.1 3.2 5.125 4.375 2.525.975 3.025.775 3.575.725.55-.05 1.775-.725 2.025-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35-.3-.15-1.775-.875-2.05-.975-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.265-.465-2.41-1.485-.89-.795-1.49-1.775-1.665-2.075-.175-.3-.018-.462.131-.61.134-.134.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.243-.583-.49-.5-.675-.51L12.73 10z"/></svg><span style="font-size:clamp(14px,2.2vw,26px);color:rgba(220,240,220,.72)">'+wa+'</span></div>'
+    : '';
+
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Post</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;font-family:'DM Sans',sans-serif}
+.post{width:100vw;height:100vh;position:relative;overflow:hidden;background:${t.bg};display:flex;flex-direction:column;justify-content:space-between}
+.post::before{content:'';position:absolute;inset:0;background:${gradCSS};z-index:0}
+.dc1{position:absolute;width:30vw;height:30vw;border-radius:50%;border:1px solid rgba(126,219,126,0.1);top:-8vw;right:-8vw;z-index:1}
+.dc2{position:absolute;width:16vw;height:16vw;border-radius:50%;border:1px solid rgba(126,219,126,0.07);top:2vw;right:2vw;z-index:1}
+.content{position:relative;z-index:2;padding:clamp(12px,3vw,36px) clamp(20px,5vw,56px) 0;flex:1;display:flex;flex-direction:column}
+.t1{font-family:'DM Serif Display',serif;font-size:clamp(28px,7vw,80px);color:${t.title};line-height:1.1;word-break:break-word;font-weight:900;letter-spacing:-1px}
+.t2{font-family:'DM Serif Display',serif;font-size:clamp(28px,7vw,80px);color:${t.accent};font-style:italic;line-height:1.1;word-break:break-word;font-weight:900;letter-spacing:-1px;margin-bottom:clamp(10px,2vw,24px)}
+.div{width:clamp(32px,5vw,60px);height:3px;background:linear-gradient(90deg,${t.accent},transparent);margin-bottom:clamp(10px,2vw,24px);border-radius:2px}
+.desc{font-size:clamp(14px,2.4vw,28px);color:rgba(220,240,220,.75);line-height:1.7;font-weight:300;max-width:76%}
+${listCSS}
+.tag-wrap{position:relative;z-index:2;display:flex;justify-content:center;padding-bottom:clamp(8px,1.5vw,18px)}
+.tag{display:inline-block;background:rgba(100,200,100,.15);border:1px solid rgba(100,200,100,.35);color:${t.accent};font-size:clamp(14px,2.5vw,30px);font-weight:600;padding:clamp(6px,1vw,12px) clamp(14px,2.2vw,26px);border-radius:20px}
+.footer{position:relative;z-index:2;background:${t.footer};border-top:1px solid ${t.fborder};padding:clamp(10px,2.5vw,28px) clamp(20px,5vw,56px);display:flex;align-items:center;justify-content:space-between}
+.handle{font-family:'DM Serif Display',serif;font-size:clamp(18px,3vw,34px);font-weight:700;color:${t.accent}}
+.icons{display:flex;align-items:center;gap:clamp(14px,3vw,36px)}
+.icon{display:flex;flex-direction:column;align-items:center;gap:.4vw}
+.icon svg{width:clamp(32px,6vw,64px);height:clamp(32px,6vw,64px);fill:none;stroke:rgba(220,240,220,.65);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.icon span{font-size:clamp(8px,1.2vw,14px);color:rgba(200,230,200,.45);text-transform:uppercase}
+</style></head><body>
+<div class="post">
+  <div class="dc1"></div><div class="dc2"></div>
+  ${imgHTML}
+  <div class="content">
+    <div class="t1">${line1}</div><div class="t2">${line2}</div>
+    <div class="div"></div>
+    <p class="desc">${desc}</p>
+    ${listHTML}
+  </div>
+  <div class="tag-wrap"><div class="tag">${tag}</div></div>
+  <div class="footer">
+    <div>
+      <div class="handle">${handle}</div>
+      ${waHTML}
+    </div>
+    <div class="icons">
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Curta</span></div>
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Comente</span></div>
+      <div class="icon"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Compartilhe</span></div>
+      <div class="icon"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Salve</span></div>
+    </div>
+  </div>
+</div></body></html>`;
+}
+
+function pgAbrirTelaCheia(){
+  const html = pgBuildHTML();
+  window.open(URL.createObjectURL(new Blob([html],{type:'text/html'})),'_blank');
+}
+
+function pgSalvarImagem(){
+  const btn  = document.getElementById('pg-btn-salvar');
+  const post = document.getElementById('pg-post');
+  if(!post){ toast('❌ Post não encontrado'); return; }
+
+  if(btn){ btn.textContent='⏳ Gerando…'; btn.disabled=true; }
+
+  // Garante que html2canvas está disponível
+  if(typeof html2canvas === 'undefined'){
+    if(btn){ btn.textContent='💾 Salvar como imagem'; btn.disabled=false; }
+    toast('❌ html2canvas não carregou. Verifique a conexão.');
+    return;
+  }
+
+  const handle   = (CFG.ig||'nutri').replace('@','').replace(/\s+/g,'-') || 'post';
+  const filename = 'post-' + handle + '-' + Date.now() + '.png';
+
+  html2canvas(post, {
+    scale: 3,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: (PG_THEMES[_pgTheme]||{}).bg || null,
+    logging: false,
+    width:  post.offsetWidth,
+    height: post.offsetHeight,
+    windowWidth:  post.offsetWidth,
+    windowHeight: post.offsetHeight,
+  }).then(function(canvas){
+    canvas.toBlob(function(blob){
+      if(!blob){ toast('❌ Erro ao gerar PNG'); return; }
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+      if(btn){ btn.textContent='💾 Salvar como imagem'; btn.disabled=false; }
+      toast('✅ PNG salvo: ' + filename);
+    }, 'image/png');
+  }).catch(function(err){
+    console.error('html2canvas error:', err);
+    if(btn){ btn.textContent='💾 Salvar como imagem'; btn.disabled=false; }
+    toast('❌ Erro. Tente "Abrir em tela cheia" e capture manualmente.');
+  });
 }
 
 // ════════════════════════════════════════════════════════════
