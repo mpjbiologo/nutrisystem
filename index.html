@@ -5876,23 +5876,20 @@ function gerarHTMLImpressao(pacId, forPrint){
 
   // ── PLANO ALIMENTAR TEXTO LIVRE ──
   if(isChecked('plano-livre')){
-    const textoEl=document.getElementById('imp-plano-livre-texto');
-    // Try: 1) preview textarea, 2) global var, 3) last saved for this patient
-    let texto=textoEl?textoEl.value:planoLivreTexto;
-    if(!texto&&DB.planoLivre){
-      const saved=(DB.planoLivre).filter(p=>p.pacId===pacId).sort((a,b)=>b.criado-a.criado);
-      if(saved.length)texto=saved[0].texto||'';
+    // Pega HTML do editor rico (contenteditable) ou do último plano salvo
+    let htmlPlano = '';
+    const edEl = document.getElementById('plano-livre-editor');
+    if(edEl && (edEl.innerText||'').trim()){
+      htmlPlano = edEl.innerHTML;
+    } else if(DB.planoLivre){
+      const saved = (DB.planoLivre).filter(p=>p.pacId===pacId).sort((a,b)=>b.criado-a.criado);
+      if(saved.length) htmlPlano = saved[0].texto||'';
     }
     html+=`<div class="prn-block">
       <div class="prn-block-title">📄 Plano Alimentar</div>
       ${forPrint
-        ?`<div class="prn-texto-livre">${(texto||'').replace(/</g,'&lt;')}</div>`
-        :`<div style="margin-bottom:8px">
-            <textarea id="imp-plano-livre-texto" placeholder="Digite o plano alimentar personalizado aqui...&#10;&#10;Café da manhã (7h): ...&#10;Lanche da manhã (10h): ...&#10;Almoço (12h30): ...&#10;Lanche da tarde (15h): ...&#10;Jantar (19h): ...&#10;Ceia (21h): ..."
-              style="width:100%;height:240px;border:1.5px solid #ddd;border-radius:8px;padding:12px;font-size:12px;line-height:1.8;font-family:inherit;resize:vertical;color:#1a1a1a"
-              oninput="planoLivreTexto=this.value">${texto||''}</textarea>
-          </div>
-          <div class="prn-texto-livre" style="display:${texto?'block':'none'};margin-top:8px">${(texto||'').replace(/</g,'&lt;')}</div>`
+        ?`<div class="prn-texto-livre" style="white-space:normal">${htmlPlano||'<em style="color:#999">Nenhum plano escrito.</em>'}</div>`
+        :`<div class="prn-texto-livre" style="min-height:80px;white-space:normal;background:#fafafa;border:1px solid #ddd;border-radius:8px;padding:14px;font-size:12px;line-height:1.7">${htmlPlano||'<em style="color:#aaa">Nenhum conteúdo. Acesse Plano Alimentar → Texto Livre para escrever.</em>'}</div>`
       }
     </div>`;
   }
