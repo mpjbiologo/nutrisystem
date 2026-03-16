@@ -4943,6 +4943,15 @@ function renderProntuario(pacId){
           <span class="prnt-item-num">#${numCron}</span>
           <div class="prnt-row-date">${fmtData(c.data)}</div>
           <div class="prnt-row-actions">
+            ${(()=>{
+              const tel=(p.whats||p.tel||'').replace(/\D/g,'');
+              if(!tel||c.status==='Realizado'||c.status==='Cancelado') return '';
+              const dataConsulta=c.data?new Date(c.data+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}):c.data||'';
+              const hora=c.hora?'às '+c.hora:'';
+              const nomeNutri=CFG.nome?CFG.nome.split(' ').slice(0,2).join(' '):'Nutricionista';
+              const msg=encodeURIComponent('Olá, '+p.nome.split(' ')[0]+'! Aqui é do consultório do Nutricionista '+nomeNutri+'\nPassando para confirmar sua consulta marcada para *'+dataConsulta+' '+hora+'*.\nPor favor, responda *SIM* para confirmar ou entre em contato caso precise remarcar.\nAté lá!');
+              return '<a class="prnt-row-btn" href="https://wa.me/55'+tel+'?text='+msg+'" target="_blank" title="Enviar confirmação via WhatsApp" style="color:#25D366;text-decoration:none;font-size:16px">💬</a>';
+            })()}
             <button class="prnt-row-btn" onclick="editConsulta('${c.id}')" title="Editar">✏️</button>
             <button class="prnt-row-btn" onclick="deleteItem('consulta','${c.id}',()=>renderProntuario('${pacId}'))" title="Excluir">🗑️</button>
           </div>
