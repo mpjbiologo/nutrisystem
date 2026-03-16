@@ -881,6 +881,38 @@ td:first-child{font-weight:600;color:var(--g2);}
 #plano-livre-editor{width:100%;min-height:480px;padding:20px;font-size:13px;line-height:1.9;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--input-bg);outline:none;overflow-y:auto;display:block;}
 #plano-livre-editor:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none;white-space:pre-line;}
 
+
+/* ─── ANIVERSÁRIOS ─── */
+#dash-aniversarios-banner{
+  border-radius:var(--radius);overflow:hidden;margin-bottom:20px;
+}
+.aniv-card{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  border-radius:0 10px 10px 0;margin-bottom:6px;cursor:pointer;
+  transition:all .15s;
+}
+.aniv-card:hover{filter:brightness(.96);}
+.aniv-card.hoje{
+  background:linear-gradient(90deg,#fff3cd,#fffaed);
+  border-left:4px solid #f5c842;
+}
+.aniv-card.amanha{
+  background:var(--g6);border-left:4px solid var(--g4);
+}
+.aniv-card.semana{
+  background:var(--card-bg);border-left:4px solid var(--border);
+}
+.aniv-emoji{font-size:22px;flex-shrink:0;}
+.aniv-nome{font-size:13px;font-weight:700;color:var(--g1);}
+.aniv-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.aniv-badge{
+  margin-left:auto;padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;
+}
+.aniv-badge.hoje{background:#f5c842;color:#5a3e00;}
+.aniv-badge.amanha{background:var(--g5);color:var(--g1);}
+.aniv-badge.semana{background:var(--border);color:var(--muted);}
+
 </style>
 </head>
 <body>
@@ -1011,6 +1043,9 @@ td:first-child{font-weight:600;color:var(--g2);}
     <div class="stat-card amber"><div class="stat-icon">📅</div><div class="stat-label">Consultas no Mês</div><div class="stat-value" id="stat-consultas">0</div><div class="stat-sub" id="stat-mes">este mês</div></div>
     <div class="stat-card green"><div class="stat-icon">💰</div><div class="stat-label">Receita do Mês</div><div class="stat-value" id="stat-receita">R$0</div><div class="stat-sub">pagamentos confirmados</div></div>
   </div>
+
+  <!-- Banner aniversários -->
+  <div id="dash-aniversarios-banner"></div>
 
   <!-- Main grid: 3 columns -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start">
@@ -4016,6 +4051,89 @@ function renderDashboard(){
       <span style="font-size:10px;color:var(--muted);white-space:nowrap">${r.d.toLocaleDateString('pt-BR')}</span>
     </div>`).join('')
     : '<p style="color:var(--muted);font-size:12px;text-align:center;padding:8px 0">Nenhuma atividade</p>';
+
+  // ── ANIVERSÁRIOS ──
+  renderAniversarios();
+}
+
+
+// ════════════════════════════════════════════════════════════
+// ANIVERSÁRIOS
+// ════════════════════════════════════════════════════════════
+function renderAniversarios(){
+  const banner = document.getElementById('dash-aniversarios-banner');
+  if(!banner) return;
+
+  const hoje  = new Date();
+  const hMes  = hoje.getMonth()+1;
+  const hDia  = hoje.getDate();
+  const hAno  = hoje.getFullYear();
+
+  // Calcula dias até o próximo aniversário
+  function diasAteAniv(nasc){
+    const d = new Date(nasc+'T12:00');
+    if(isNaN(d)) return 999;
+    let anivEsteAno = new Date(hAno, d.getMonth(), d.getDate());
+    if(anivEsteAno < hoje) anivEsteAno = new Date(hAno+1, d.getMonth(), d.getDate());
+    return Math.round((anivEsteAno - new Date(hAno, hMes-1, hDia)) / 86400000);
+  }
+
+  function idadeCompleta(nasc){
+    const d = new Date(nasc+'T12:00');
+    let age = hAno - d.getFullYear();
+    if(new Date(hAno, d.getMonth(), d.getDate()) > hoje) age--;
+    return age;
+  }
+
+  // Filtrar pacientes com data de nascimento, próximos 7 dias
+  const candidatos = DB.pac
+    .filter(p => p.nasc)
+    .map(p => ({ p, dias: diasAteAniv(p.nasc) }))
+    .filter(x => x.dias <= 7)
+    .sort((a,b) => a.dias - b.dias);
+
+  if(!candidatos.length){
+    banner.innerHTML = '';
+    return;
+  }
+
+  const items = candidatos.map(({p, dias}) => {
+    const d = new Date(p.nasc+'T12:00');
+    const dataStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+    const idade = idadeCompleta(p.nasc) + (dias===0 ? 0 : 1);
+
+    let tipo, emoji, badgeLabel;
+    if(dias === 0){
+      tipo='hoje'; emoji='🎂'; badgeLabel='🎉 Hoje!';
+    } else if(dias === 1){
+      tipo='amanha'; emoji='🎁'; badgeLabel='Amanhã';
+    } else {
+      tipo='semana'; emoji='🎈'; badgeLabel=`em ${dias} dias`;
+    }
+
+    return `<div class="aniv-card ${tipo}" onclick="abrirProntuario('${p.id}','dashboard')" title="Ver prontuário de ${p.nome}">
+      <span class="aniv-emoji">${emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div class="aniv-nome">${p.nome}</div>
+        <div class="aniv-sub">${dataStr} · ${idade} anos${p.status?' · '+p.status:''}</div>
+      </div>
+      <span class="aniv-badge ${tipo}">${badgeLabel}</span>
+    </div>`;
+  }).join('');
+
+  const totalHoje = candidatos.filter(x=>x.dias===0).length;
+  const titulo = totalHoje > 0
+    ? `🎂 Aniversários${totalHoje===1?' — '+candidatos.find(x=>x.dias===0).p.nome.split(' ')[0]+' faz aniversário hoje!':' de Hoje ('+totalHoje+')'}`
+    : `🎈 Próximos Aniversários (${candidatos.length})`;
+
+  banner.innerHTML = `
+    <div class="card" style="padding:0;overflow:hidden;border-color:${totalHoje>0?'#f5c842':'var(--border)'}">
+      <div style="padding:12px 16px;background:${totalHoje>0?'linear-gradient(90deg,#fff3cd,#fffbea)':'var(--g6)'};border-bottom:1px solid ${totalHoje>0?'#f5c842':'var(--border)'};display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:700;font-size:13px;color:${totalHoje>0?'#7a5200':'var(--g2)'}">${titulo}</span>
+        <span style="font-size:11px;color:${totalHoje>0?'#a07000':'var(--muted)'}">Próximos 7 dias</span>
+      </div>
+      <div style="padding:10px 14px">${items}</div>
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════════
